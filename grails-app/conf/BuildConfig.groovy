@@ -37,11 +37,12 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         // runtime 'mysql:mysql-connector-java:5.1.27'
+        compile 'org.apache.shiro:shiro-cas:1.2.2'
     }
 
     plugins {
-        build(":release:3.0.1",
-              ":rest-client-builder:1.0.3") {
+        compile ":shiro:1.2.0"
+        build(":release:2.2.1") {
             export = false
         }
     }

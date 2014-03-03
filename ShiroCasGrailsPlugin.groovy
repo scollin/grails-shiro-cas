@@ -1,8 +1,11 @@
+import org.apache.shiro.grails.ConfigUtils
+
 class ShiroCasGrailsPlugin {
     // the plugin version
     def version = "0.1.0-SNAPSHOT"
     // the version or versions of Grails the plugin is designed for
-    def grailsVersion = "2.3 > *"
+    def grailsVersion = "2.2 > *"
+    def dependsOn = [shiro: "1.2.0 > *"]
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
         "grails-app/views/error.gsp"
@@ -22,6 +25,8 @@ Enables Grails applications to use JASIG CAS for single sign-on with Apache Shir
 
     def license = "APACHE"
 
+    def developers = [ [ name: "Ford Guo", email: "agile.guo@gmail.com" ]]
+
     def organization = [ name: "CommerceHub", url: "http://www.commercehub.com/" ]
 
     // Location of the plugin's issue tracker.
@@ -34,8 +39,24 @@ Enables Grails applications to use JASIG CAS for single sign-on with Apache Shir
     }
 
     def doWithSpring = {
-        // TODO Implement runtime spring config (optional)
+        def securityConfig = application.config.security.shiro
+        shiroSecurityManager.subjectFactory = {org.apache.shiro.cas.CasSubjectFactory factory->}
+        if (!securityConfig.filter.config) {
+            casFilter(org.apache.shiro.cas.CasFilter) {bean->
+                if (securityConfig.cas.failureUrl) {
+                    failureUrl = securityConfig.cas.failureUrl
+                }
+            }
+            if (!securityConfig.filter.filterChainDefinitions) {
+                shiroFilter.filterChainDefinitions = ConfigUtils.getShiroCasFilter()
+            }
+            if (!securityConfig.filter.loginUrl) {
+                shiroFilter.loginUrl = ConfigUtils.getLoginUrl()
+            }
+        }
     }
+    // TODO: somehow handle redirect after authentication, previously in accessControlMethod
+    // TODO: see plaza hack
 
     def doWithDynamicMethods = { ctx ->
         // TODO Implement registering dynamic methods to classes (optional)
