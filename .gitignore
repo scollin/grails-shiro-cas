@@ -5,4 +5,5 @@
 out/
 target/
 *.zip
+*.zip.sha1
 plugin.xml
