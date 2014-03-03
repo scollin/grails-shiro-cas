@@ -1,3 +1,6 @@
+import grails.spring.BeanBuilder
+import org.apache.shiro.cas.CasFilter
+import org.apache.shiro.cas.CasSubjectFactory
 import org.apache.shiro.grails.ConfigUtils
 
 class ShiroCasGrailsPlugin {
@@ -6,6 +9,7 @@ class ShiroCasGrailsPlugin {
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.2 > *"
     def dependsOn = [shiro: "1.2.0 > *"]
+    def loadAfter = ["shiro"]
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
         "grails-app/views/error.gsp"
@@ -40,23 +44,27 @@ Enables Grails applications to use JASIG CAS for single sign-on with Apache Shir
 
     def doWithSpring = {
         def securityConfig = application.config.security.shiro
-        shiroSecurityManager.subjectFactory = {org.apache.shiro.cas.CasSubjectFactory factory->}
+        def beanBuilder = delegate as BeanBuilder
+        casSubjectFactory(CasSubjectFactory)
+        def shiroSecurityManager = beanBuilder.getBeanDefinition("shiroSecurityManager")
+        shiroSecurityManager.propertyValues.add("subjectFactory", casSubjectFactory)
         if (!securityConfig.filter.config) {
-            casFilter(org.apache.shiro.cas.CasFilter) {bean->
+            casFilter(CasFilter) {bean->
                 if (securityConfig.cas.failureUrl) {
                     failureUrl = securityConfig.cas.failureUrl
                 }
             }
+            def shiroFilter = beanBuilder.getBeanDefinition("shiroFilter")
             if (!securityConfig.filter.filterChainDefinitions) {
-                shiroFilter.filterChainDefinitions = ConfigUtils.getShiroCasFilter()
+                shiroFilter.propertyValues.addPropertyValue("filterChainDefinitions", ConfigUtils.shiroCasFilter)
             }
             if (!securityConfig.filter.loginUrl) {
-                shiroFilter.loginUrl = ConfigUtils.getLoginUrl()
+                shiroFilter.propertyValues.addPropertyValue("loginUrl", ConfigUtils.loginUrl)
             }
         }
     }
     // TODO: somehow handle redirect after authentication, previously in accessControlMethod
-    // TODO: see plaza hack
+    // TODO: see saved request hack
 
     def doWithDynamicMethods = { ctx ->
         // TODO Implement registering dynamic methods to classes (optional)
