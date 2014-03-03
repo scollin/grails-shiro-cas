@@ -4,13 +4,10 @@ import org.apache.shiro.cas.CasSubjectFactory
 import org.apache.shiro.grails.ConfigUtils
 
 class ShiroCasGrailsPlugin {
-    // the plugin version
     def version = "0.1.0-SNAPSHOT"
-    // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.2 > *"
     def dependsOn = [shiro: "1.2.0 > *"]
     def loadAfter = ["shiro"]
-    // resources that are excluded from plugin packaging
     def pluginExcludes = [
         "grails-app/views/error.gsp"
     ]
@@ -22,10 +19,7 @@ class ShiroCasGrailsPlugin {
 Enables Grails applications to use JASIG CAS for single sign-on with Apache Shiro.
 '''
 
-    // URL to the plugin's documentation
     def documentation = "http://grails.org/plugin/shiro-cas"
-
-    // Extra (optional) plugin metadata
 
     def license = "APACHE"
 
@@ -33,7 +27,6 @@ Enables Grails applications to use JASIG CAS for single sign-on with Apache Shir
 
     def organization = [ name: "CommerceHub", url: "http://www.commercehub.com/" ]
 
-    // Location of the plugin's issue tracker.
     def issueManagement = [ system: "GitHub", url: "https://github.com/commercehub-oss/grails-shiro-cas/issues" ]
 
     def scm = [ url: "https://github.com/commercehub-oss/grails-shiro-cas/" ]
