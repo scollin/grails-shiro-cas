@@ -9,7 +9,7 @@ import org.apache.shiro.subject.SimplePrincipalCollection
 import org.jasig.cas.client.authentication.AttributePrincipal
 import org.jasig.cas.client.validation.*
 
-import org.apache.shiro.grails.ConfigUtils
+import org.apache.shiro.cas.grails.ConfigUtils
 
 /**
  * Simple realm that authenticates users against an CAS server.

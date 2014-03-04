@@ -1,4 +1,4 @@
-package org.apache.shiro.grails
+package org.apache.shiro.cas.grails
 
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.apache.shiro.cas.CasToken
@@ -8,8 +8,7 @@ import org.apache.shiro.cas.CasToken
  */
 class ConfigUtils {
     private static innerConfig = null
-    
-    
+
     static getConfig() {
         if (innerConfig==null) 
             innerConfig = ConfigurationHolder.config

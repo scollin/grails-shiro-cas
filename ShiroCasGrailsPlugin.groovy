@@ -1,7 +1,7 @@
 import grails.spring.BeanBuilder
 import org.apache.shiro.cas.CasFilter
 import org.apache.shiro.cas.CasSubjectFactory
-import org.apache.shiro.grails.ConfigUtils
+import org.apache.shiro.cas.grails.ConfigUtils
 
 class ShiroCasGrailsPlugin {
     def version = "0.1.0-SNAPSHOT"
@@ -31,10 +31,6 @@ Enables Grails applications to use JASIG CAS for single sign-on with Apache Shir
 
     def scm = [ url: "https://github.com/commercehub-oss/grails-shiro-cas/" ]
 
-    def doWithWebDescriptor = { xml ->
-        // TODO Implement additions to web.xml (optional), this event occurs before
-    }
-
     def doWithSpring = {
         def securityConfig = application.config.security.shiro
         def beanBuilder = delegate as BeanBuilder
@@ -55,30 +51,5 @@ Enables Grails applications to use JASIG CAS for single sign-on with Apache Shir
                 shiroFilter.propertyValues.addPropertyValue("loginUrl", ConfigUtils.loginUrl)
             }
         }
-    }
-    // TODO: somehow handle redirect after authentication, previously in accessControlMethod
-    // TODO: see saved request hack
-
-    def doWithDynamicMethods = { ctx ->
-        // TODO Implement registering dynamic methods to classes (optional)
-    }
-
-    def doWithApplicationContext = { ctx ->
-        // TODO Implement post initialization spring config (optional)
-    }
-
-    def onChange = { event ->
-        // TODO Implement code that is executed when any artefact that this plugin is
-        // watching is modified and reloaded. The event contains: event.source,
-        // event.application, event.manager, event.ctx, and event.plugin.
-    }
-
-    def onConfigChange = { event ->
-        // TODO Implement code that is executed when the project configuration changes.
-        // The event is the same as for 'onChange'.
-    }
-
-    def onShutdown = { event ->
-        // TODO Implement code that is executed when the application shuts down (optional)
     }
 }
