@@ -2,6 +2,7 @@ import grails.spring.BeanBuilder
 import org.apache.shiro.cas.CasFilter
 import org.apache.shiro.cas.CasSubjectFactory
 import org.apache.shiro.cas.grails.ConfigUtils
+import org.jasig.cas.client.validation.Cas20ServiceTicketValidator
 
 class ShiroCasGrailsPlugin {
     def version = "0.1.0-SNAPSHOT"
@@ -34,13 +35,15 @@ Enables Grails applications to use JASIG CAS for single sign-on with Apache Shir
     def doWithSpring = {
         def securityConfig = application.config.security.shiro
         def beanBuilder = delegate as BeanBuilder
+        ConfigUtils.initialize(application.config)
+        casTicketValidator(Cas20ServiceTicketValidator, ConfigUtils.serverUrl)
         casSubjectFactory(CasSubjectFactory)
         def shiroSecurityManager = beanBuilder.getBeanDefinition("shiroSecurityManager")
         shiroSecurityManager.propertyValues.add("subjectFactory", casSubjectFactory)
         if (!securityConfig.filter.config) {
             casFilter(CasFilter) {bean->
-                if (securityConfig.cas.failureUrl) {
-                    failureUrl = securityConfig.cas.failureUrl
+                if (ConfigUtils.failureUrl) {
+                    failureUrl = ConfigUtils.failureUrl
                 }
             }
             def shiroFilter = beanBuilder.getBeanDefinition("shiroFilter")

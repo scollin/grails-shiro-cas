@@ -1,54 +1,62 @@
 package org.apache.shiro.cas.grails
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import groovy.transform.PackageScope
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+import org.apache.shiro.authc.AuthenticationToken
 import org.apache.shiro.cas.CasToken
 
 /**
  * The Config utilies
  */
 class ConfigUtils {
-    private static innerConfig = null
+    private static Log log = LogFactory.getLog(ConfigUtils)
 
-    static getConfig() {
-        if (innerConfig==null) 
-            innerConfig = ConfigurationHolder.config
-        innerConfig
-    }
-    static def authBy = [:] //key is  AuthenticationToken's principal,AuthenticationToken class name
-    
-    static def getCasEnable() {
-        (config.security.shiro.cas.enable?:false).toBoolean()
-    }
-    
-    static def getShiroCasFilter() {
-        "/shiro-cas=casFilter\n" + config.security.shiro.filter.filterChainDefinitions?:''
-    }
-    
-    static def getLoginUrl() {
-        if (config.security.shiro.cas.loginUrl) {
-            config.security.shiro.cas.loginUrl
-        }else{
-            def serverUrl = config.security.shiro.cas.serverUrl?:'https://localhost:8443/cas'
-            serverUrl.endsWith("/") ? serverUrl : (serverUrl+"/") +"login?service="+config.security.shiro.cas.serviceUrl
+    private static Set<Object> casPrincipals = []
+
+    static String serverUrl
+    static String serviceUrl
+    static String loginUrl
+    static String logoutUrl
+    static String failureUrl
+    private static String filterChainDefinitions
+
+    static void initialize(ConfigObject config) {
+        serverUrl = stripTrailingSlash(config.security.shiro.cas.serverUrl)
+        serviceUrl = stripTrailingSlash(config.security.shiro.cas.serviceUrl)
+        loginUrl = config.security.shiro.cas.loginUrl ?: "${serverUrl}/login?service=${serviceUrl}"
+        logoutUrl = config.security.shiro.cas.logoutUrl ?: "${serverUrl}/logout?service=${serviceUrl}"
+        failureUrl = config.security.shiro.cas.failureUrl
+        filterChainDefinitions = config.security.shiro.filter.filterChainDefinitions ?: ""
+        if (!serverUrl) {
+            log.error("Invalid application configuration: security.shiro.cas.serverUrl is required; it should be https://host:port/cas")
+        }
+        if (!serviceUrl) {
+            log.error("Invalid application configuration: security.shiro.cas.serviceUrl is required; it should be http://host:port/mycontextpath/shiro-cas")
         }
     }
     
-    static def getLogoutUrl() {
-        if (config.security.shiro.cas.logoutUrl) {
-            config.security.shiro.cas.logoutUrl
-        }else{
-            def serverUrl = config.security.shiro.cas.serverUrl?:'https://localhost:8443/cas'
-            serverUrl.endsWith("/") ? serverUrl : (serverUrl+"/") +"logout?service="+config.security.shiro.cas.serviceUrl
-        }
+    static String getShiroCasFilter() {
+        return "/shiro-cas=casFilter\n${filterChainDefinitions}"
     }
     
-    static def putPrincipal(authenticationToken) {
-        authBy[authenticationToken.principal.toString()] = authenticationToken.class
+    static void putPrincipal(AuthenticationToken authenticationToken) {
+        if (authenticationToken instanceof CasToken) {
+            casPrincipals << authenticationToken.principal
+        }
     }
-    static def isFromCas(principal) {
-        authBy[principal.toString()] == CasToken
+
+    @PackageScope
+    static boolean isFromCas(Object principal) {
+        return casPrincipals.contains(principal)
     }
-    static def removePrincipal(principal) {
-        authBy.remove(principal.toString())
+
+    @PackageScope
+    static void removePrincipal(Object principal) {
+        casPrincipals.remove(principal)
+    }
+
+    private static String stripTrailingSlash(String url) {
+        return url?.endsWith("/") ? url[0..-2] : url
     }
 }
