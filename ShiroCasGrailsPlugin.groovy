@@ -1,7 +1,7 @@
 import grails.spring.BeanBuilder
 import org.apache.shiro.cas.CasFilter
 import org.apache.shiro.cas.CasSubjectFactory
-import org.apache.shiro.cas.grails.ConfigUtils
+import org.apache.shiro.cas.grails.ShiroCasConfigUtils
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator
 
 class ShiroCasGrailsPlugin {
@@ -35,23 +35,23 @@ Enables Grails applications to use JASIG CAS for single sign-on with Apache Shir
     def doWithSpring = {
         def securityConfig = application.config.security.shiro
         def beanBuilder = delegate as BeanBuilder
-        ConfigUtils.initialize(application.config)
-        casTicketValidator(Cas20ServiceTicketValidator, ConfigUtils.serverUrl)
+        ShiroCasConfigUtils.initialize(application.config)
+        casTicketValidator(Cas20ServiceTicketValidator, ShiroCasConfigUtils.serverUrl)
         casSubjectFactory(CasSubjectFactory)
         def shiroSecurityManager = beanBuilder.getBeanDefinition("shiroSecurityManager")
         shiroSecurityManager.propertyValues.add("subjectFactory", casSubjectFactory)
         if (!securityConfig.filter.config) {
             casFilter(CasFilter) {bean->
-                if (ConfigUtils.failureUrl) {
-                    failureUrl = ConfigUtils.failureUrl
+                if (ShiroCasConfigUtils.failureUrl) {
+                    failureUrl = ShiroCasConfigUtils.failureUrl
                 }
             }
             def shiroFilter = beanBuilder.getBeanDefinition("shiroFilter")
             if (!securityConfig.filter.filterChainDefinitions) {
-                shiroFilter.propertyValues.addPropertyValue("filterChainDefinitions", ConfigUtils.shiroCasFilter)
+                shiroFilter.propertyValues.addPropertyValue("filterChainDefinitions", ShiroCasConfigUtils.shiroCasFilter)
             }
             if (!securityConfig.filter.loginUrl) {
-                shiroFilter.propertyValues.addPropertyValue("loginUrl", ConfigUtils.loginUrl)
+                shiroFilter.propertyValues.addPropertyValue("loginUrl", ShiroCasConfigUtils.loginUrl)
             }
         }
     }

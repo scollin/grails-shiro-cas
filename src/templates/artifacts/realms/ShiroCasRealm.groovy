@@ -2,7 +2,8 @@
 import org.apache.shiro.authc.SimpleAuthenticationInfo
 import org.apache.shiro.cas.CasAuthenticationException
 import org.apache.shiro.cas.CasToken
-import org.apache.shiro.cas.grails.ConfigUtils
+import org.apache.shiro.cas.grails.ShiroCasConfigUtils
+import org.apache.shiro.cas.grails.ShiroCasPrincipalManager
 import org.jasig.cas.client.authentication.AttributePrincipal
 import org.jasig.cas.client.validation.TicketValidationException
 import org.jasig.cas.client.validation.TicketValidator
@@ -19,7 +20,7 @@ class @realm.name@ {
         def ticket = preValidate(authToken)
         log.info "Attempting to authenticate ${authToken.principal} in CAS realm..."
         try {
-            def casAssertion = casTicketValidator.validate(ticket, ConfigUtils.serviceUrl)
+            def casAssertion = casTicketValidator.validate(ticket, ShiroCasConfigUtils.serviceUrl)
             def casPrincipal = casAssertion.principal
             def username = casPrincipal.name
             if (log.infoEnabled) {
@@ -27,7 +28,7 @@ class @realm.name@ {
                 log.info("With attributes: ${casPrincipal.attributes}")
             }
             updateAuthToken(authToken, casPrincipal)
-            ConfigUtils.putPrincipal(authToken)
+            ShiroCasPrincipalManager.rememberPrincipalForToken(authToken)
             return new SimpleAuthenticationInfo(createApplicationPrincipal(casPrincipal), ticket, getClass().simpleName)
         } catch (TicketValidationException ex) {
             log.error("Unable to validate ticket ${ticket}", ex)
