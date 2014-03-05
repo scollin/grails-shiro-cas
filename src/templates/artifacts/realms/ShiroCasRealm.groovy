@@ -12,13 +12,13 @@ import org.jasig.cas.client.validation.TicketValidator
  * Simple realm that authenticates users against an CAS server.
  */
 class @realm.name@ {
-    static authTokenClass = org.apache.shiro.cas.CasToken
+    static authTokenClass = CasToken
 
     TicketValidator casTicketValidator
 
-    def authenticate(authToken) {
+    def authenticate(CasToken authToken) {
         def ticket = preValidate(authToken)
-        log.info "Attempting to authenticate ${authToken.principal} in CAS realm..."
+        log.info("Attempting to validate ticket ${ticket} against CAS...")
         try {
             def casAssertion = casTicketValidator.validate(ticket, ShiroCasConfigUtils.serviceUrl)
             def casPrincipal = casAssertion.principal
@@ -28,7 +28,6 @@ class @realm.name@ {
                 log.info("With attributes: ${casPrincipal.attributes}")
             }
             updateAuthToken(authToken, casPrincipal)
-            ShiroCasPrincipalManager.rememberPrincipalForToken(authToken)
             return new SimpleAuthenticationInfo(createApplicationPrincipal(casPrincipal), ticket, getClass().simpleName)
         } catch (TicketValidationException ex) {
             log.error("Unable to validate ticket ${ticket}", ex)
@@ -36,7 +35,7 @@ class @realm.name@ {
         }
     }
 
-    private static Object createApplicationPrincipal(AttributePrincipal casPrincipal) {
+    private Object createApplicationPrincipal(AttributePrincipal casPrincipal) {
         return casPrincipal.name // TODO: if needed, add application-specific principal logic
     }
 
@@ -58,5 +57,6 @@ class @realm.name@ {
         if (isRemembered) {
             authToken.setRememberMe(true)
         }
+        ShiroCasPrincipalManager.rememberPrincipalForToken(authToken)
     }
 }
