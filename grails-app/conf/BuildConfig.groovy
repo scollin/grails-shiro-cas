@@ -18,10 +18,14 @@ grails.project.dependency.resolution = {
     }
     dependencies {
         compile "org.apache.shiro:shiro-cas:1.2.2"
+        test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
     }
 
     plugins {
         compile ":shiro:1.2.0"
+        test(":spock:0.7") {
+            exclude "spock-grails-support"
+        }
         build(":release:2.2.1") {
             export = false
         }
