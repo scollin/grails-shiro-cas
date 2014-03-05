@@ -10,7 +10,7 @@ To install the plugin, add declaration to your `BuildConfig.groovy` plugins sect
 
 Next, you need to re-configure your `ShiroSecurityFilters`.  The easiest way to accomplish this is to make your class extend `org.apache.shiro.cas.grails.ShiroCasSecurityFilters`.  If that's not an option, you can copy the `onNotAuthenticated` handler into your class.
 
-Finally, you need a CAS-enabled Shiro realm.  Run `grails create-cas-realm` to create such a realm based on a template, and then modify as needed for your application.
+Finally, you need a CAS-enabled Shiro realm.  Run `grails create-cas-realm` to create such a realm based on a template.  If desired, you can customize the name by specifying `--prefix=PACKAGE.` or `--prefix=PACKAGE.CLASSPREFIX`.  Modify the generated class as needed for your application.
 
 # Configuration
 

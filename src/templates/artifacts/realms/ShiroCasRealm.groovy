@@ -19,7 +19,7 @@ class @realm.name@ {
         def ticket = preValidate(authToken)
         log.info "Attempting to authenticate ${authToken.principal} in CAS realm..."
         try {
-            def casAssertion = ticketValidator.validate(ticket, ConfigUtils.serviceUrl)
+            def casAssertion = casTicketValidator.validate(ticket, ConfigUtils.serviceUrl)
             def casPrincipal = casAssertion.principal
             def username = casPrincipal.name
             if (log.infoEnabled) {
