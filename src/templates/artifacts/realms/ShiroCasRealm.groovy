@@ -40,12 +40,9 @@ class @realm.name@ {
     }
 
     private static String preValidate(CasToken authToken) {
-        if (authToken == null) {
-            throw new AccountException("This realm requires a non-null token.")
-        }
-        def ticket = authToken.credentials as String
+        def ticket = authToken?.credentials as String
         if (!ticket) {
-            throw new AccountException("No ticket found within token")
+            throw new AccountException("No ticket found")
         }
         return ticket
     }
