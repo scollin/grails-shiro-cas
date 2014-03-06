@@ -2,8 +2,9 @@
 *.ipr
 *.iws
 .idea/
-out/
-target/
+/out
+/target
 *.zip
 *.zip.sha1
 plugin.xml
+/web-app

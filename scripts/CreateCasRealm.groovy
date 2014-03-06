@@ -30,6 +30,9 @@ where
 """
 
 target(createCasRealm: "Creates a new CAS realm.") {
+    // Make sure any arguments have been parsed.
+    depends(parseArguments)
+
     def (pkg, prefix) = parsePrefix()
 
     // Copy over the template LDAP realm.
@@ -42,11 +45,6 @@ target(createCasRealm: "Creates a new CAS realm.") {
     }
 
     event("CreatedArtefact", ['Realm', className])
-}
-
-target (default: "Creates a CAS Shiro realm") {
-    // Make sure any arguments have been parsed.
-    depends(parseArguments, createCasRealm)
 }
 
 private parsePrefix() {
@@ -115,3 +113,5 @@ installTemplateEx = { String artefactName, String artefactPath, String templateP
 
     event("CreatedFile", [artefactFile])
 }
+
+setDefaultTarget 'createCasRealm'
