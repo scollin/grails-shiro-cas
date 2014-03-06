@@ -18,9 +18,9 @@ Finally, you need a CAS-enabled Shiro realm.  Run `grails create-cas-realm` to c
 
 * `security.shiro.cas.serverUrl` (REQUIRED): The URL of the CAS instance to authenticate against.  This should be an HTTPS URL.
 * `security.shiro.cas.serviceUrl` (REQUIRED): The URL to pass to CAS as the `service` parameter (see [CAS Protocol](http://www.jasig.org/cas/protocol) for more details on how this is used).  This should be the URL at which end-users can reach the `/shiro-cas` path within the current application (which is automatically registered by this plugin).
+* `security.shiro.cas.failureUrl` (RECOMMENDED): The URL that users are redirected to if ticket validation fails.  If this is not specified, ticket validation failures will result in `NullPointerException`s being thrown.
 * `security.shiro.cas.loginUrl` (OPTIONAL): The URL that users are redirected to when login is required.  By default, this directs users to `/login` within the `serverUrl`, passing along the service as a query parameter.
 * `security.shiro.cas.logoutUrl` (OPTIONAL): The URL that users are redirected to when logging out.  By default, this directs users to `/logout` within the `serverUrl`, passing along the service as a query parameter.
-* `config.security.shiro.cas.failureUrl` (OPTIONAL): The URL that users are redirected to if ticket validation fails.
 
 ## Example configuration
 
