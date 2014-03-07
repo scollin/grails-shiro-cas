@@ -6,30 +6,18 @@ import org.jasig.cas.client.validation.Cas20ServiceTicketValidator
 
 class ShiroCasGrailsPlugin {
     def version = "0.1.0-SNAPSHOT"
-    def grailsVersion = "2.2 > *"
-    def dependsOn = [shiro: "1.2.0 > *"]
+    def grailsVersion = "2.0 > *"
     def loadAfter = ["shiro"]
-    def pluginExcludes = [
-        "grails-app/views/error.gsp"
-    ]
-
     def title = "Shiro CAS Plugin"
-    def author = "David M. Carr"
-    def authorEmail = "dcarr@commercehub.com"
-    def description = '''\
-Enables Grails applications to use JASIG CAS for single sign-on with Apache Shiro.
-'''
-
+    def description = 'Enables Grails applications to use JASIG CAS for single sign-on with Apache Shiro'
     def documentation = "http://grails.org/plugin/shiro-cas"
-
     def license = "APACHE"
-
-    def developers = [ [ name: "Ford Guo", email: "agile.guo@gmail.com" ]]
-
+    def developers = [
+        [name: "David M. Carr", email: "dcarr@commercehub.com"],
+        [name: "Ford Guo", email: "agile.guo@gmail.com"]
+    ]
     def organization = [ name: "CommerceHub", url: "http://www.commercehub.com/" ]
-
     def issueManagement = [ system: "GitHub", url: "https://github.com/commercehub-oss/grails-shiro-cas/issues" ]
-
     def scm = [ url: "https://github.com/commercehub-oss/grails-shiro-cas/" ]
 
     def doWithSpring = {

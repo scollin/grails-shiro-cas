@@ -16,11 +16,12 @@ class ShiroCasConfigUtils {
     private static String filterChainDefinitions
 
     static void initialize(ConfigObject config) {
-        serverUrl = stripTrailingSlash(config.security.shiro.cas.serverUrl ?: "")
-        serviceUrl = stripTrailingSlash(config.security.shiro.cas.serviceUrl ?: "")
-        loginUrl = config.security.shiro.cas.loginUrl ?: "${serverUrl}/login?service=${serviceUrl}"
-        logoutUrl = config.security.shiro.cas.logoutUrl ?: "${serverUrl}/logout?service=${serviceUrl}"
-        failureUrl = config.security.shiro.cas.failureUrl ?: null
+        def casConfig = config.security.shiro.cas
+        serverUrl = stripTrailingSlash(casConfig.serverUrl ?: "")
+        serviceUrl = stripTrailingSlash(casConfig.serviceUrl ?: "")
+        loginUrl = casConfig.loginUrl ?: "${serverUrl}/login?service=${serviceUrl}"
+        logoutUrl = casConfig.logoutUrl ?: "${serverUrl}/logout?service=${serviceUrl}"
+        failureUrl = casConfig.failureUrl ?: null
         filterChainDefinitions = config.security.shiro.filter.filterChainDefinitions ?: ""
         if (!serverUrl) {
             log.error("Invalid application configuration: security.shiro.cas.serverUrl is required; it should be https://host:port/cas")
