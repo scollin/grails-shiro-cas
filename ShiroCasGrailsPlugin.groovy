@@ -5,12 +5,12 @@ import org.apache.shiro.cas.grails.ShiroCasConfigUtils
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator
 
 class ShiroCasGrailsPlugin {
-    def version = "0.1.0-SNAPSHOT"
+    def version = "0.1.0"
     def grailsVersion = "2.0 > *"
     def loadAfter = ["shiro"]
     def title = "Shiro CAS Plugin"
     def description = 'Enables Grails applications to use JASIG CAS for single sign-on with Apache Shiro'
-    def documentation = "http://grails.org/plugin/shiro-cas"
+    def documentation = "https://github.com/commercehub-oss/grails-shiro-cas/blob/master/README.md"
     def license = "APACHE"
     def developers = [
         [name: "David M. Carr", email: "dcarr@commercehub.com"],
