@@ -19,7 +19,7 @@ class ShiroCasConfigUtils {
         def casConfig = config.security.shiro.cas
         serverUrl = stripTrailingSlash(casConfig.serverUrl ?: "")
         serviceUrl = stripTrailingSlash(casConfig.serviceUrl ?: "")
-        loginUrl =  addLoginParameters(casConfig.loginUrl ?: "${serverUrl}/login?service=${serviceUrl}")
+        loginUrl =  addUrlParameters(casConfig.loginUrl ?: "${serverUrl}/login?service=${serviceUrl}", casConfig.loginParameters)
         logoutUrl = casConfig.logoutUrl ?: "${serverUrl}/logout?service=${serviceUrl}"
         failureUrl = casConfig.failureUrl ?: null
         filterChainDefinitions = config.security.shiro.filter.filterChainDefinitions ?: ""
@@ -31,11 +31,14 @@ class ShiroCasConfigUtils {
         }
     }
     
-    private static String addLoginParameters(String loginUrl, ConfigObject parameters){
-        parameters.each {k, v->
-            loginUrl+="&$k=$v"
+    private static String addUrlParameters(String url, ConfigObject parameters){
+        if(parameters){
+            def query = parameters.collect{param, val->
+                "${URLEncoder.encode(param as String, "UTF-8")}=${URLEncoder.encode(val as String, "UTF-8")}"
+            }.join('&')
+            return "${url}${new URI(url).getQuery() ? '&' : '?'}${query}"
         }
-        return loginUrl
+        return url
     }
 
     static String getShiroCasFilter() {
