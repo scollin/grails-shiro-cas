@@ -5,7 +5,7 @@ import org.apache.shiro.cas.grails.ShiroCasConfigUtils
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator
 
 class ShiroCasGrailsPlugin {
-    def version = "0.1.1-SNAPSHOT"
+    def version = "0.1.2-SNAPSHOT"
     def grailsVersion = "2.0 > *"
     def loadAfter = ["shiro"]
     def title = "Shiro CAS Plugin"
