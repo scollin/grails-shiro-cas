@@ -14,7 +14,8 @@ class ShiroCasGrailsPlugin {
     def license = "APACHE"
     def developers = [
         [name: "David M. Carr", email: "dcarr@commercehub.com"],
-        [name: "Ford Guo", email: "agile.guo@gmail.com"]
+        [name: "Ford Guo", email: "agile.guo@gmail.com"],
+        [name: "Gavin Hogan", email: "gavin@commercehub.com"]
     ]
     def organization = [ name: "CommerceHub", url: "http://www.commercehub.com/" ]
     def issueManagement = [ system: "GitHub", url: "https://github.com/commercehub-oss/grails-shiro-cas/issues" ]
