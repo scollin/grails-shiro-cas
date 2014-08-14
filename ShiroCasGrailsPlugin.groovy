@@ -2,6 +2,8 @@ import grails.spring.BeanBuilder
 import org.apache.shiro.cas.CasFilter
 import org.apache.shiro.cas.CasSubjectFactory
 import org.apache.shiro.cas.grails.ShiroCasConfigUtils
+import org.jasig.cas.client.session.SingleSignOutFilter
+import org.jasig.cas.client.session.SingleSignOutHttpSessionListener
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator
 
 class ShiroCasGrailsPlugin {
@@ -30,9 +32,16 @@ class ShiroCasGrailsPlugin {
         def shiroSecurityManager = beanBuilder.getBeanDefinition("shiroSecurityManager")
         shiroSecurityManager.propertyValues.add("subjectFactory", casSubjectFactory)
         if (!securityConfig.filter.config) {
-            casFilter(CasFilter) {bean->
+            casFilter(CasFilter) { bean ->
                 if (ShiroCasConfigUtils.failureUrl) {
                     failureUrl = ShiroCasConfigUtils.failureUrl
+                }
+            }
+            if (!ShiroCasConfigUtils.singleSignOutDisabled) {
+                singleSignOutFilter(SingleSignOutFilter) { bean ->
+                    ignoreInitConfiguration = true
+                    artifactParameterName = ShiroCasConfigUtils.singleSignOutArtifactParameterName
+                    logoutParameterName = ShiroCasConfigUtils.singleSignOutLogoutParameterName
                 }
             }
             def shiroFilter = beanBuilder.getBeanDefinition("shiroFilter")
@@ -41,6 +50,24 @@ class ShiroCasGrailsPlugin {
             }
             if (!securityConfig.filter.loginUrl) {
                 shiroFilter.propertyValues.addPropertyValue("loginUrl", ShiroCasConfigUtils.loginUrl)
+            }
+        }
+    }
+
+    def doWithWebDescriptor = { xml ->
+        if (!ShiroCasConfigUtils.singleSignOutDisabled) {
+            def listener = xml."listener"
+            if (listener) {
+                listener[-1].children() + {
+                    "listener-class"(SingleSignOutHttpSessionListener.name)
+                }
+            } else {
+                def filterMapping = xml."filter-mapping"
+                filterMapping[-1] + {
+                    listener {
+                        "listener-class"(SingleSignOutHttpSessionListener.name)
+                    }
+                }
             }
         }
     }

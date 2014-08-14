@@ -13,6 +13,9 @@ class ShiroCasConfigUtils {
     static String loginUrl
     static String logoutUrl
     static String failureUrl
+    static boolean singleSignOutDisabled
+    static String singleSignOutArtifactParameterName
+    static String singleSignOutLogoutParameterName
     private static String filterChainDefinitions
 
     static void initialize(ConfigObject config) {
@@ -22,6 +25,9 @@ class ShiroCasConfigUtils {
         loginUrl =  addUrlParameters(casConfig.loginUrl ?: "${serverUrl}/login?service=${serviceUrl}", casConfig.loginParameters)
         logoutUrl = casConfig.logoutUrl ?: "${serverUrl}/logout?service=${serviceUrl}"
         failureUrl = casConfig.failureUrl ?: null
+        singleSignOutDisabled = casConfig.singleSignOut.disabled ?: false
+        singleSignOutArtifactParameterName = casConfig.singleSignOut.artifactParameterName ?: "ticket"
+        singleSignOutLogoutParameterName = casConfig.singleSignOut.logoutParameterName ?: "logoutRequest"
         filterChainDefinitions = config.security.shiro.filter.filterChainDefinitions ?: ""
         if (!serverUrl) {
             log.error("Invalid application configuration: security.shiro.cas.serverUrl is required; it should be https://host:port/cas")
@@ -42,7 +48,15 @@ class ShiroCasConfigUtils {
     }
 
     static String getShiroCasFilter() {
-        return "/shiro-cas=casFilter\n${filterChainDefinitions}"
+        def filters = new StringBuilder()
+        if (!singleSignOutDisabled) {
+            // The SingleSignOutFilter must come before the CAS filter (which applies the CAS filters)
+            // https://wiki.jasig.org/display/CASC/Configuring+Single+Sign+Out
+            filters.append("/*=singleSignOutFilter\n")
+        }
+        filters.append("/shiro-cas=casFilter\n")
+        filters.append(filterChainDefinitions)
+        return filters.toString()
     }
 
     private static String stripTrailingSlash(String url) {

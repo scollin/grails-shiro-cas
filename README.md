@@ -22,6 +22,9 @@ Finally, you need a CAS-enabled Shiro realm.  Run `grails create-cas-realm` to c
 * `security.shiro.cas.loginUrl` (OPTIONAL): The URL that users are redirected to when login is required.  By default, this directs users to `/login` within the `serverUrl`, passing along the service as a query parameter.
 * `security.shiro.cas.logoutUrl` (OPTIONAL): The URL that users are redirected to when logging out.  By default, this directs users to `/logout` within the `serverUrl`, passing along the service as a query parameter.
 * `security.shiro.cas.loginParameters` (OPTIONAL): Key, Value pairs to be added to the generated or explicitly set loginUrl. (see [CAS Parameters](http://www.jasig.org/cas/protocol#parameters) for more details on how this is used) 
+* `security.shiro.cas.singleSignOut.disabled` (OPTIONAL): Boolean value controlling whether to disable Single Sign Out.  By default, this is `false`, resulting in Single Sign Out support being enabled (matching the default for CAS).
+* `security.shiro.cas.singleSignOut.artifactParameterName` (OPTIONAL): The parameter used to detect sessions in preparation for Single Sign Out support.  By default, this is `ticket` (matching the default for CAS).
+* `security.shiro.cas.singleSignOut.logoutParameterName` (OPTIONAL): The parameter used to detect logout requests.  By default, this is `logoutRequest` (matching the default for CAS).
 
 ## Example configuration
 
