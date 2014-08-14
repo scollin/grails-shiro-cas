@@ -14,27 +14,27 @@ class ShiroCasPrincipalManagerSpec extends Specification {
 
         when: "no tokens have been seen"
         then: "no principals are known to CAS"
-        assert [upToken, casToken1, casToken2, null].every {!ShiroCasPrincipalManager.isFromCas(it?.principal)}
+        [upToken, casToken1, casToken2, null].every {!ShiroCasPrincipalManager.isFromCas(it?.principal)}
 
         when: "null or non-CAS tokens are seen"
         ShiroCasPrincipalManager.rememberPrincipalForToken(null)
         ShiroCasPrincipalManager.rememberPrincipalForToken(upToken)
 
         then: "no principals are known to CAS"
-        assert [upToken, casToken1, casToken2, null].every {!ShiroCasPrincipalManager.isFromCas(it?.principal)}
+        [upToken, casToken1, casToken2, null].every {!ShiroCasPrincipalManager.isFromCas(it?.principal)}
 
         when: "a CAS token is seen"
         ShiroCasPrincipalManager.rememberPrincipalForToken(casToken1)
 
         then: "only that principal is known to CAS"
-        assert [upToken, casToken2, null].every {!ShiroCasPrincipalManager.isFromCas(it?.principal)}
-        assert ShiroCasPrincipalManager.isFromCas(casToken1.principal)
+        [upToken, casToken2, null].every {!ShiroCasPrincipalManager.isFromCas(it?.principal)}
+        ShiroCasPrincipalManager.isFromCas(casToken1.principal)
 
         when: "a principal is forgotten"
         ShiroCasPrincipalManager.forgetPrincipal(casToken1.principal)
 
         then: "it is no longer known to CAS"
-        assert [upToken, casToken1, casToken2, null].every {!ShiroCasPrincipalManager.isFromCas(it?.principal)}
+        [upToken, casToken1, casToken2, null].every {!ShiroCasPrincipalManager.isFromCas(it?.principal)}
 
         when: "principals that aren't known to CAS are forgotten"
         ShiroCasPrincipalManager.forgetPrincipal(upToken.principal)

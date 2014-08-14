@@ -25,15 +25,18 @@ class ShiroCasConfigUtilsSpec extends Specification {
         1 * mockLog.error("Invalid application configuration: security.shiro.cas.serviceUrl is required; it should be http://host:port/mycontextpath/shiro-cas")
 
         and: "a default (but non-working) configuration is used"
-        assert ShiroCasConfigUtils.serverUrl == ""
-        assert ShiroCasConfigUtils.serviceUrl == ""
-        assert ShiroCasConfigUtils.loginUrl == "/login?service="
-        assert ShiroCasConfigUtils.logoutUrl == "/logout?service="
-        assert ShiroCasConfigUtils.failureUrl == null
-        assert ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=casFilter\n"
+        ShiroCasConfigUtils.serverUrl == ""
+        ShiroCasConfigUtils.serviceUrl == ""
+        ShiroCasConfigUtils.loginUrl == "/login?service="
+        ShiroCasConfigUtils.logoutUrl == "/logout?service="
+        ShiroCasConfigUtils.failureUrl == null
+        ShiroCasConfigUtils.shiroCasFilter == "/*=singleSignOutFilter\n/shiro-cas=casFilter\n"
+        !ShiroCasConfigUtils.singleSignOutDisabled
+        ShiroCasConfigUtils.singleSignOutArtifactParameterName == "ticket"
+        ShiroCasConfigUtils.singleSignOutLogoutParameterName == "logoutRequest"
     }
 
-    void testMinimalConfig() {
+    void "minimal configuration works"() {
         when: "initialized with a minimal configuration"
         init("""
 security.shiro.cas.serverUrl = "https://localhost/cas"
@@ -44,31 +47,20 @@ security.shiro.cas.serviceUrl = "http://localhost:8080/app/shiro-cas"
         0 * mockLog.error(_)
 
         and: "the configured values are used"
-        assert ShiroCasConfigUtils.serverUrl == "https://localhost/cas"
-        assert ShiroCasConfigUtils.serviceUrl == "http://localhost:8080/app/shiro-cas"
+        ShiroCasConfigUtils.serverUrl == "https://localhost/cas"
+        ShiroCasConfigUtils.serviceUrl == "http://localhost:8080/app/shiro-cas"
 
         and: "other values are either defaulted or based on the configured values"
-        assert ShiroCasConfigUtils.loginUrl == "https://localhost/cas/login?service=http://localhost:8080/app/shiro-cas"
-        assert ShiroCasConfigUtils.logoutUrl == "https://localhost/cas/logout?service=http://localhost:8080/app/shiro-cas"
-        assert ShiroCasConfigUtils.failureUrl == null
-        assert ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=casFilter\n"
+        ShiroCasConfigUtils.loginUrl == "https://localhost/cas/login?service=http://localhost:8080/app/shiro-cas"
+        ShiroCasConfigUtils.logoutUrl == "https://localhost/cas/logout?service=http://localhost:8080/app/shiro-cas"
+        ShiroCasConfigUtils.failureUrl == null
+        ShiroCasConfigUtils.shiroCasFilter == "/*=singleSignOutFilter\n/shiro-cas=casFilter\n"
+        !ShiroCasConfigUtils.singleSignOutDisabled
+        ShiroCasConfigUtils.singleSignOutArtifactParameterName == "ticket"
+        ShiroCasConfigUtils.singleSignOutLogoutParameterName == "logoutRequest"
     }
 
-    void testTrailingSlashes() {
-        when: "initialized with server url and/or service url containing a trailing slash"
-        init("""
-security.shiro.cas.serverUrl = "https://localhost/cas/"
-security.shiro.cas.serviceUrl = "http://localhost:8080/app/shiro-cas/"
-        """)
-
-        then: "the trailing slash is ignored"
-        assert ShiroCasConfigUtils.serverUrl == "https://localhost/cas"
-        assert ShiroCasConfigUtils.serviceUrl == "http://localhost:8080/app/shiro-cas"
-        assert ShiroCasConfigUtils.loginUrl == "https://localhost/cas/login?service=http://localhost:8080/app/shiro-cas"
-        assert ShiroCasConfigUtils.logoutUrl == "https://localhost/cas/logout?service=http://localhost:8080/app/shiro-cas"
-    }
-
-    void testFullConfig() {
+    void "full configuration works"() {
         when: "initalized with a full config"
         init("""
 security.shiro.cas.serverUrl = "https://cas.example.com"
@@ -78,6 +70,9 @@ security.shiro.cas.logoutUrl = "https://cas.example.com/customLogout"
 security.shiro.cas.failureUrl = "https://app.example.com/casFailure"
 security.shiro.filter.filterChainDefinitions = "/other=otherFilter"
 security.shiro.cas.loginParameters.renew = true
+security.shiro.cas.singleSignOut.disabled = false
+security.shiro.cas.singleSignOut.artifactParameterName = "token"
+security.shiro.cas.singleSignOut.logoutParameterName = "slo"
 
         """)
 
@@ -85,17 +80,33 @@ security.shiro.cas.loginParameters.renew = true
         0 * mockLog.error(_)
 
         and: "the configured values are used"
-        assert ShiroCasConfigUtils.serverUrl == "https://cas.example.com"
-        assert ShiroCasConfigUtils.serviceUrl == "https://app.example.com/shiro-cas"
-        assert ShiroCasConfigUtils.loginUrl == "https://cas.example.com/customLogin?renew=true"
-        assert ShiroCasConfigUtils.logoutUrl == "https://cas.example.com/customLogout"
-        assert ShiroCasConfigUtils.failureUrl == "https://app.example.com/casFailure"
-        assert ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=casFilter\n/other=otherFilter"
+        ShiroCasConfigUtils.serverUrl == "https://cas.example.com"
+        ShiroCasConfigUtils.serviceUrl == "https://app.example.com/shiro-cas"
+        ShiroCasConfigUtils.loginUrl == "https://cas.example.com/customLogin?renew=true"
+        ShiroCasConfigUtils.logoutUrl == "https://cas.example.com/customLogout"
+        ShiroCasConfigUtils.failureUrl == "https://app.example.com/casFailure"
+        ShiroCasConfigUtils.shiroCasFilter == "/*=singleSignOutFilter\n/shiro-cas=casFilter\n/other=otherFilter"
+        !ShiroCasConfigUtils.singleSignOutDisabled
+        ShiroCasConfigUtils.singleSignOutArtifactParameterName == "token"
+        ShiroCasConfigUtils.singleSignOutLogoutParameterName == "slo"
     }
 
+    void "trailing slashes on URLs are ignored"() {
+        when: "initialized with server url and/or service url containing a trailing slash"
+        init("""
+security.shiro.cas.serverUrl = "https://localhost/cas/"
+security.shiro.cas.serviceUrl = "http://localhost:8080/app/shiro-cas/"
+        """)
 
-    void testLoginParamsMinimalConfig() {
-        when: "initialized with a minimal configuration"
+        then: "the trailing slash is ignored"
+        ShiroCasConfigUtils.serverUrl == "https://localhost/cas"
+        ShiroCasConfigUtils.serviceUrl == "http://localhost:8080/app/shiro-cas"
+        ShiroCasConfigUtils.loginUrl == "https://localhost/cas/login?service=http://localhost:8080/app/shiro-cas"
+        ShiroCasConfigUtils.logoutUrl == "https://localhost/cas/logout?service=http://localhost:8080/app/shiro-cas"
+    }
+
+    void "specified login parameters are honored"() {
+        when: "initialized with a configuration including login parameters"
         init("""
 security.shiro.cas.serverUrl = "https://localhost/cas"
 security.shiro.cas.serviceUrl = "http://localhost:8080/app/shiro-cas"
@@ -108,15 +119,31 @@ security.shiro.cas.loginParameters.welcome = "Welcome to Shiro Cas"
         0 * mockLog.error(_)
 
         and: "the configured values are used"
-        assert ShiroCasConfigUtils.serverUrl == "https://localhost/cas"
-        assert ShiroCasConfigUtils.serviceUrl == "http://localhost:8080/app/shiro-cas"
+        ShiroCasConfigUtils.serverUrl == "https://localhost/cas"
+        ShiroCasConfigUtils.serviceUrl == "http://localhost:8080/app/shiro-cas"
 
         and: "other values are either defaulted or based on the configured values"
-        assert ShiroCasConfigUtils.loginUrl ==
+        ShiroCasConfigUtils.loginUrl ==
                 "https://localhost/cas/login?service=http://localhost:8080/app/shiro-cas&renew=true&gateway=true&welcome=Welcome+to+Shiro+Cas"
-        assert ShiroCasConfigUtils.logoutUrl == "https://localhost/cas/logout?service=http://localhost:8080/app/shiro-cas"
-        assert ShiroCasConfigUtils.failureUrl == null
-        assert ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=casFilter\n"
+        ShiroCasConfigUtils.logoutUrl == "https://localhost/cas/logout?service=http://localhost:8080/app/shiro-cas"
+        ShiroCasConfigUtils.failureUrl == null
+        ShiroCasConfigUtils.shiroCasFilter == "/*=singleSignOutFilter\n/shiro-cas=casFilter\n"
+    }
+
+    void "single sign out support can be disabled"() {
+        when: "initialized with a configuration including login parameters"
+        init("""
+security.shiro.cas.serverUrl = "https://localhost/cas"
+security.shiro.cas.serviceUrl = "http://localhost:8080/app/shiro-cas"
+security.shiro.cas.singleSignOut.disabled = true
+        """)
+
+        then: "no errors are logged"
+        0 * mockLog.error(_)
+
+        and: "single sign out support is disabled"
+        ShiroCasConfigUtils.singleSignOutDisabled
+        ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=casFilter\n"
     }
 
     static void init(String script) {
