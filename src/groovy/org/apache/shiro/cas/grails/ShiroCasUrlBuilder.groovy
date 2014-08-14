@@ -5,7 +5,6 @@ import org.springframework.web.util.UriComponentsBuilder
 import javax.servlet.http.HttpServletResponse
 
 class ShiroCasUrlBuilder {
-
     private final UriComponentsBuilder componentsBuilder
 
     private ShiroCasUrlBuilder(String url) {
@@ -40,5 +39,4 @@ class ShiroCasUrlBuilder {
     static ShiroCasUrlBuilder forLogout() {
         return new ShiroCasUrlBuilder(ShiroCasConfigUtils.logoutUrl)
     }
-
 }
