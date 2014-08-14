@@ -38,3 +38,13 @@ A valid configuration would be:
 security.shiro.cas.serverUrl='https://sso.example.com/cas'
 security.shiro.cas.serviceUrl='https://apps.example.com/my-app/shiro-cas'
 ```
+
+# Accessing URLs
+
+If, in your application, you need access to any of the configuration values, use `ShiroCasConfigUtils`.
+
+For accessing the login/logout URLs, use `ShiroCasUrlBuilder`.  It supports adding query parameters if needed.
+
+Example:
+
+    ShiroCasUrlBuilder.forLogin().withRenew().withQueryParam("token", "12345").go(response)
