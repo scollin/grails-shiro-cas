@@ -3,6 +3,7 @@ package org.apache.shiro.cas.grails
 import groovy.transform.PackageScope
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.springframework.web.util.UriComponentsBuilder
 
 class ShiroCasConfigUtils {
     @PackageScope
@@ -22,8 +23,8 @@ class ShiroCasConfigUtils {
         def casConfig = config.security.shiro.cas
         serverUrl = stripTrailingSlash(casConfig.serverUrl ?: "")
         serviceUrl = stripTrailingSlash(casConfig.serviceUrl ?: "")
-        loginUrl =  addUrlParameters(casConfig.loginUrl ?: "${serverUrl}/login?service=${serviceUrl}", casConfig.loginParameters)
-        logoutUrl = casConfig.logoutUrl ?: "${serverUrl}/logout?service=${serviceUrl}"
+        loginUrl = serverUrl ? assembleLoginUrl(casConfig) : ""
+        logoutUrl = serverUrl ? assembleLogoutUrl(casConfig) : ""
         failureUrl = casConfig.failureUrl ?: null
         singleSignOutDisabled = casConfig.singleSignOut.disabled ?: false
         singleSignOutArtifactParameterName = casConfig.singleSignOut.artifactParameterName ?: "ticket"
@@ -36,17 +37,27 @@ class ShiroCasConfigUtils {
             log.error("Invalid application configuration: security.shiro.cas.serviceUrl is required; it should be http://host:port/mycontextpath/shiro-cas")
         }
     }
-    
-    private static String addUrlParameters(String url, ConfigObject parameters){
-        if(parameters){
-            def query = parameters.collect{param, val->
-                "${URLEncoder.encode(param as String, "UTF-8")}=${URLEncoder.encode(val as String, "UTF-8")}"
-            }.join('&')
-            return "${url}${new URI(url).getQuery() ? '&' : '?'}${query}"
+
+    private static String assembleLoginUrl(ConfigObject casConfig) {
+        def params = casConfig.loginParameters
+        def builder = casConfig.loginUrl ?
+                UriComponentsBuilder.fromHttpUrl(casConfig.loginUrl) :
+                UriComponentsBuilder.fromHttpUrl(serverUrl).path("/login").queryParam("service", serviceUrl)
+        if (params) {
+            params.each { name, value ->
+                builder.queryParam(name, value)
+            }
         }
-        return url
+        return builder.build().encode().toUriString()
     }
 
+    private static String assembleLogoutUrl(ConfigObject casConfig) {
+        def builder = casConfig.logoutUrl ?
+                UriComponentsBuilder.fromHttpUrl(casConfig.logoutUrl) :
+                UriComponentsBuilder.fromHttpUrl(serverUrl).path("/logout").queryParam("service", serviceUrl)
+        return builder.build().encode().toUriString()
+    }
+    
     static String getShiroCasFilter() {
         def filters = new StringBuilder()
         if (!singleSignOutDisabled) {

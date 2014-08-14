@@ -27,8 +27,8 @@ class ShiroCasConfigUtilsSpec extends Specification {
         and: "a default (but non-working) configuration is used"
         ShiroCasConfigUtils.serverUrl == ""
         ShiroCasConfigUtils.serviceUrl == ""
-        ShiroCasConfigUtils.loginUrl == "/login?service="
-        ShiroCasConfigUtils.logoutUrl == "/logout?service="
+        ShiroCasConfigUtils.loginUrl == ""
+        ShiroCasConfigUtils.logoutUrl == ""
         ShiroCasConfigUtils.failureUrl == null
         ShiroCasConfigUtils.shiroCasFilter == "/*=singleSignOutFilter\n/shiro-cas=casFilter\n"
         !ShiroCasConfigUtils.singleSignOutDisabled
@@ -124,7 +124,7 @@ security.shiro.cas.loginParameters.welcome = "Welcome to Shiro Cas"
 
         and: "other values are either defaulted or based on the configured values"
         ShiroCasConfigUtils.loginUrl ==
-                "https://localhost/cas/login?service=http://localhost:8080/app/shiro-cas&renew=true&gateway=true&welcome=Welcome+to+Shiro+Cas"
+                "https://localhost/cas/login?service=http://localhost:8080/app/shiro-cas&renew=true&gateway=true&welcome=Welcome%20to%20Shiro%20Cas"
         ShiroCasConfigUtils.logoutUrl == "https://localhost/cas/logout?service=http://localhost:8080/app/shiro-cas"
         ShiroCasConfigUtils.failureUrl == null
         ShiroCasConfigUtils.shiroCasFilter == "/*=singleSignOutFilter\n/shiro-cas=casFilter\n"

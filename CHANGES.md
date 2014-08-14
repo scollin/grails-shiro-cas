@@ -2,6 +2,7 @@
 
 * Update shiro plugin dependency to 1.2.1
 * Add support for Single Sign Out [#5](https://github.com/commercehub-oss/grails-shiro-cas/issues/5)
+* Add ShiroCasUrlBuilder to support building login URLs with additional parameters [#4](https://github.com/commercehub-oss/grails-shiro-cas/issues/4) 
 
 # 0.2.0
 
