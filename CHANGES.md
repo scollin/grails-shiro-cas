@@ -1,3 +1,7 @@
+# 0.3.0
+
+* Update shiro plugin dependency to 1.2.1
+
 # 0.2.0
 
 * Add support for configuring `loginParameters` [#2](https://github.com/commercehub-oss/grails-shiro-cas/issues/2), thanks to [Gavin Hogan](https://github.com/gavinhogan).

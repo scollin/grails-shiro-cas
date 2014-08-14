@@ -21,7 +21,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        compile ":shiro:1.2.0"
+        compile ":shiro:1.2.1"
 
         test(":spock:0.7") {
             exclude "spock-grails-support"
