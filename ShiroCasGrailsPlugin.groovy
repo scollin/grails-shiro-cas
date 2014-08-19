@@ -55,18 +55,13 @@ class ShiroCasGrailsPlugin {
     }
 
     def doWithWebDescriptor = { xml ->
+        // This block is called only at build-time, not at run-time.
+        // Thus, any externalized configuration will not be taken into account.
         if (!ShiroCasConfigUtils.singleSignOutDisabled) {
-            def listener = xml."listener"
-            if (listener) {
-                listener[-1].children() + {
+            def priorElement = xml."filter-mapping"
+            priorElement[priorElement.size() - 1] + {
+                listener {
                     "listener-class"(SingleSignOutHttpSessionListener.name)
-                }
-            } else {
-                def filterMapping = xml."filter-mapping"
-                filterMapping[-1] + {
-                    listener {
-                        "listener-class"(SingleSignOutHttpSessionListener.name)
-                    }
                 }
             }
         }

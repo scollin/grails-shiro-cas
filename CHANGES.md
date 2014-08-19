@@ -1,3 +1,7 @@
+# 0.3.1
+
+* Correct logic for registering single sign out HTTP session listener in `web.xml`
+
 # 0.3.0
 
 * Update shiro plugin dependency to 1.2.1

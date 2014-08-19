@@ -1,5 +1,6 @@
 package org.apache.shiro.cas.grails
 
+import grails.util.Holders
 import groovy.transform.PackageScope
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -14,7 +15,6 @@ class ShiroCasConfigUtils {
     static String loginUrl
     static String logoutUrl
     static String failureUrl
-    static boolean singleSignOutDisabled
     static String singleSignOutArtifactParameterName
     static String singleSignOutLogoutParameterName
     private static String filterChainDefinitions
@@ -26,7 +26,6 @@ class ShiroCasConfigUtils {
         loginUrl = serverUrl ? assembleLoginUrl(casConfig) : ""
         logoutUrl = serverUrl ? assembleLogoutUrl(casConfig) : ""
         failureUrl = casConfig.failureUrl ?: null
-        singleSignOutDisabled = casConfig.singleSignOut.disabled ?: false
         singleSignOutArtifactParameterName = casConfig.singleSignOut.artifactParameterName ?: "ticket"
         singleSignOutLogoutParameterName = casConfig.singleSignOut.logoutParameterName ?: "logoutRequest"
         filterChainDefinitions = config.security.shiro.filter.filterChainDefinitions ?: ""
@@ -36,6 +35,10 @@ class ShiroCasConfigUtils {
         if (!serviceUrl) {
             log.error("Invalid application configuration: security.shiro.cas.serviceUrl is required; it should be http://host:port/mycontextpath/shiro-cas")
         }
+    }
+
+    static boolean isSingleSignOutDisabled() {
+        return Holders.config.security.shiro.cas.singleSignOut.disabled ?: false
     }
 
     private static String assembleLoginUrl(ConfigObject casConfig) {
@@ -60,7 +63,7 @@ class ShiroCasConfigUtils {
     
     static String getShiroCasFilter() {
         def filters = new StringBuilder()
-        if (!singleSignOutDisabled) {
+        if (!isSingleSignOutDisabled()) {
             // The SingleSignOutFilter must come before the CAS filter (which applies the CAS filters)
             // https://wiki.jasig.org/display/CASC/Configuring+Single+Sign+Out
             filters.append("/*=singleSignOutFilter\n")
