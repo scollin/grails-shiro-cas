@@ -1,5 +1,6 @@
 package org.apache.shiro.cas.grails
 
+import grails.util.Holders
 import org.apache.commons.logging.Log
 import spock.lang.Specification
 
@@ -148,6 +149,7 @@ security.shiro.cas.singleSignOut.disabled = true
 
     static void init(String script) {
         def config = new ConfigSlurper().parse(script)
+        Holders.config = config
         ShiroCasConfigUtils.initialize(config)
     }
 }
