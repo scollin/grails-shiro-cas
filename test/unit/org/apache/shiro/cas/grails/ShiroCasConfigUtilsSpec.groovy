@@ -31,7 +31,7 @@ class ShiroCasConfigUtilsSpec extends Specification {
         ShiroCasConfigUtils.loginUrl == ""
         ShiroCasConfigUtils.logoutUrl == ""
         ShiroCasConfigUtils.failureUrl == null
-        ShiroCasConfigUtils.shiroCasFilter == "/*=singleSignOutFilter\n/shiro-cas=casFilter\n"
+        ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=singleSignOutFilter,casFilter\n"
         !ShiroCasConfigUtils.singleSignOutDisabled
         ShiroCasConfigUtils.singleSignOutArtifactParameterName == "ticket"
         ShiroCasConfigUtils.singleSignOutLogoutParameterName == "logoutRequest"
@@ -55,7 +55,7 @@ security.shiro.cas.serviceUrl = "http://localhost:8080/app/shiro-cas"
         ShiroCasConfigUtils.loginUrl == "https://localhost/cas/login?service=http://localhost:8080/app/shiro-cas"
         ShiroCasConfigUtils.logoutUrl == "https://localhost/cas/logout?service=http://localhost:8080/app/shiro-cas"
         ShiroCasConfigUtils.failureUrl == null
-        ShiroCasConfigUtils.shiroCasFilter == "/*=singleSignOutFilter\n/shiro-cas=casFilter\n"
+        ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=singleSignOutFilter,casFilter\n"
         !ShiroCasConfigUtils.singleSignOutDisabled
         ShiroCasConfigUtils.singleSignOutArtifactParameterName == "ticket"
         ShiroCasConfigUtils.singleSignOutLogoutParameterName == "logoutRequest"
@@ -86,7 +86,7 @@ security.shiro.cas.singleSignOut.logoutParameterName = "slo"
         ShiroCasConfigUtils.loginUrl == "https://cas.example.com/customLogin?renew=true"
         ShiroCasConfigUtils.logoutUrl == "https://cas.example.com/customLogout"
         ShiroCasConfigUtils.failureUrl == "https://app.example.com/casFailure"
-        ShiroCasConfigUtils.shiroCasFilter == "/*=singleSignOutFilter\n/shiro-cas=casFilter\n/other=otherFilter"
+        ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=singleSignOutFilter,casFilter\n/other=otherFilter"
         !ShiroCasConfigUtils.singleSignOutDisabled
         ShiroCasConfigUtils.singleSignOutArtifactParameterName == "token"
         ShiroCasConfigUtils.singleSignOutLogoutParameterName == "slo"
@@ -128,7 +128,7 @@ security.shiro.cas.loginParameters.welcome = "Welcome to Shiro Cas"
                 "https://localhost/cas/login?service=http://localhost:8080/app/shiro-cas&renew=true&gateway=true&welcome=Welcome%20to%20Shiro%20Cas"
         ShiroCasConfigUtils.logoutUrl == "https://localhost/cas/logout?service=http://localhost:8080/app/shiro-cas"
         ShiroCasConfigUtils.failureUrl == null
-        ShiroCasConfigUtils.shiroCasFilter == "/*=singleSignOutFilter\n/shiro-cas=casFilter\n"
+        ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=singleSignOutFilter,casFilter\n"
     }
 
     void "single sign out support can be disabled"() {
