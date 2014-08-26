@@ -1,3 +1,5 @@
+# Unreleased
+
 # 0.3.2
 
 * Fix `filterChainDefinitions` configuration when Single Sign Out enabled [#6](https://github.com/commercehub-oss/grails-shiro-cas/issues/6)
