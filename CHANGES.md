@@ -1,3 +1,7 @@
+# 0.3.2
+
+* Fix `filterChainDefinitions` configuration when Single Sign Out enabled [#6](https://github.com/commercehub-oss/grails-shiro-cas/issues/6)
+
 # 0.3.1
 
 * Correct logic for registering single sign out HTTP session listener in `web.xml`

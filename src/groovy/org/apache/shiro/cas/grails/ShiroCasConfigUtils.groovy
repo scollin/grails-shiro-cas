@@ -64,11 +64,12 @@ class ShiroCasConfigUtils {
     static String getShiroCasFilter() {
         def filters = new StringBuilder()
         if (!isSingleSignOutDisabled()) {
-            // The SingleSignOutFilter must come before the CAS filter (which applies the CAS filters)
+            // The SingleSignOutFilter must come before the CAS filter
             // https://wiki.jasig.org/display/CASC/Configuring+Single+Sign+Out
-            filters.append("/*=singleSignOutFilter\n")
+            filters.append("/shiro-cas=singleSignOutFilter,casFilter\n")
+        } else {
+            filters.append("/shiro-cas=casFilter\n")
         }
-        filters.append("/shiro-cas=casFilter\n")
         filters.append(filterChainDefinitions)
         return filters.toString()
     }

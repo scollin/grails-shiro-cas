@@ -48,3 +48,15 @@ For accessing the login/logout URLs, use `ShiroCasUrlBuilder`.  It supports addi
 Example:
 
     ShiroCasUrlBuilder.forLogin().withRenew().withQueryParam("token", "12345").go(response)
+
+# What does the plugin do?
+
+In general, it's intended to make it quick and easy to use CAS by layering on top of the configuration already done
+by the shiro plugin.  This includes:
+
+* If Single Sign Out is not disabled:
+  * configures an instance of `SingleSignOutFilter` as `singleSignOutFilter` and registers it in `shiroFilter`'s `filterChainDefinitions`
+  * registers `SingleSignOutHttpSessionListener` in `web.xml`
+* configures an instance of `CasFilter` as `casFilter` and registers it in `shiroFilter`'s `filterChainDefinitions`
+* configures an instance of `Cas20ServiceTicketValidator` as `casTicketValidator`
+* configures an instance of `CasSubjectFactory` as `casSubjectFactory` and registers it with `shiroSecurityManager`
