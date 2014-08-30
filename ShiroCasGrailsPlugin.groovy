@@ -7,7 +7,7 @@ import org.jasig.cas.client.session.SingleSignOutHttpSessionListener
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator
 
 class ShiroCasGrailsPlugin {
-    def version = "0.3.3"
+    def version = "0.3.4-SNAPSHOT"
     def grailsVersion = "2.0 > *"
     def loadAfter = ["shiro"]
     def title = "Shiro CAS Plugin"
