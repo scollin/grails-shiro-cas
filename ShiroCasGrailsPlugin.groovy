@@ -27,7 +27,9 @@ class ShiroCasGrailsPlugin {
         def securityConfig = application.config.security.shiro
         def beanBuilder = delegate as BeanBuilder
         ShiroCasConfigUtils.initialize(application.config)
-        casTicketValidator(Cas20ServiceTicketValidator, ShiroCasConfigUtils.serverUrl)
+        casTicketValidator(Cas20ServiceTicketValidator, ShiroCasConfigUtils.serverUrl) {
+            encoding = "UTF-8"
+        }
         casSubjectFactory(CasSubjectFactory)
         def shiroSecurityManager = beanBuilder.getBeanDefinition("shiroSecurityManager")
         shiroSecurityManager.propertyValues.add("subjectFactory", casSubjectFactory)
