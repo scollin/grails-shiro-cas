@@ -46,7 +46,7 @@ security.shiro.cas.serviceUrl='https://apps.example.com/my-app/shiro-cas'
 Assuming that:
 * your end-users use more than one domain to access the application
 * your CAS instance is deployed at context path `/cas` on `sso.example.com` on the default HTTPS port
-* your Grails application is accessed via a load-balancer at https://\*.example.com/my-app, where `\*` indicates a wildcard.
+* your Grails application is accessed via a load-balancer at https://\*.example.com/my-app, where \* indicates a wildcard.
 
 A valid configuration would be:
 
