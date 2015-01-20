@@ -2,7 +2,13 @@ package org.apache.shiro.cas.grails
 
 import grails.util.Holders
 import org.apache.commons.logging.Log
+import org.apache.shiro.SecurityUtils
+import org.apache.shiro.subject.Subject
+import org.apache.shiro.web.util.WebUtils
+import org.springframework.http.HttpRequest
 import spock.lang.Specification
+
+import javax.servlet.http.HttpServletRequest
 
 class ShiroCasConfigUtilsSpec extends Specification {
     Log realLog
@@ -70,6 +76,7 @@ security.shiro.cas.loginUrl = "https://cas.example.com/customLogin"
 security.shiro.cas.logoutUrl = "https://cas.example.com/customLogout"
 security.shiro.cas.failureUrl = "https://app.example.com/casFailure"
 security.shiro.filter.filterChainDefinitions = "/other=otherFilter"
+security.shiro.filter.dynamicServerName = false
 security.shiro.cas.loginParameters.renew = true
 security.shiro.cas.singleSignOut.disabled = false
 security.shiro.cas.singleSignOut.artifactParameterName = "token"
@@ -145,6 +152,58 @@ security.shiro.cas.singleSignOut.disabled = true
         and: "single sign out support is disabled"
         ShiroCasConfigUtils.singleSignOutDisabled
         ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=casFilter\n"
+    }
+
+    void "dynamicServerName option handles multiple server names"(){
+        setup:
+        def firstDomain = "test.server.com"
+        def secondDomain = "anothertest.server.com"
+
+        GroovyMock(SecurityUtils, global: true)
+        GroovyMock(WebUtils, global: true)
+        def httpServletRequest = Mock(HttpServletRequest)
+        httpServletRequest.getScheme() >> "http"
+        httpServletRequest.getServerPort() >> 80
+        WebUtils.getHttpRequest(_) >> httpServletRequest
+
+
+        when: "initialized with a dynamicServerName configuration"
+        init("""
+security.shiro.cas.serverUrl = "https://localhost/cas"
+security.shiro.cas.serviceUrl = "http://localhost:8080/app/shiro-cas"
+security.shiro.cas.serviceUri = "/test/shiro-cas"
+security.shiro.cas.failureUri = "/test/"
+security.shiro.cas.dynamicServerName = true
+        """)
+
+        def firstServiceUrl = ShiroCasConfigUtils.serviceUrl
+        def firstFailureUrl = ShiroCasConfigUtils.failureUrl
+        def secondServiceUrl = ShiroCasConfigUtils.serviceUrl
+        def secondFailureUrl = ShiroCasConfigUtils.failureUrl
+
+        then: "URLs overwridden using first domain"
+        2 * httpServletRequest.getServerName() >> firstDomain
+        firstServiceUrl == "http://" + firstDomain + "/test/shiro-cas"
+        firstFailureUrl == "http://" + firstDomain + "/test/"
+
+
+        then: "URLs overwridden using second domain"
+        2 * httpServletRequest.getServerName() >> secondDomain
+        secondServiceUrl == "http://" + secondDomain + "/test/shiro-cas"
+        secondFailureUrl == "http://" + secondDomain + "/test/"
+    }
+
+    void "dynamicServerName option requires serviceUri"(){
+
+        when: "initialized with an invalid dynamicServerName configuration (without serviceUri)"
+        init("""
+security.shiro.cas.serverUrl = "https://localhost/cas"
+security.shiro.cas.serviceUrl = "http://localhost:8080/app/shiro-cas"
+security.shiro.cas.dynamicServerName = true
+        """)
+
+        then: "throws an error"
+        1 * mockLog.error(_)
     }
 
     static void init(String script) {
