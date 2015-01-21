@@ -171,8 +171,8 @@ security.shiro.cas.singleSignOut.disabled = true
         init("""
 security.shiro.cas.serverUrl = "https://localhost/cas"
 security.shiro.cas.serviceUrl = "http://localhost:8080/app/shiro-cas"
-security.shiro.cas.serviceUri = "/test/shiro-cas"
-security.shiro.cas.failureUri = "/test/"
+security.shiro.cas.servicePath = "/test/shiro-cas"
+security.shiro.cas.failurePath = "/test/"
 security.shiro.cas.dynamicServerName = true
         """)
 
@@ -191,19 +191,6 @@ security.shiro.cas.dynamicServerName = true
         2 * httpServletRequest.getServerName() >> secondDomain
         secondServiceUrl == "http://" + secondDomain + "/test/shiro-cas"
         secondFailureUrl == "http://" + secondDomain + "/test/"
-    }
-
-    void "dynamicServerName option requires serviceUri"(){
-
-        when: "initialized with an invalid dynamicServerName configuration (without serviceUri)"
-        init("""
-security.shiro.cas.serverUrl = "https://localhost/cas"
-security.shiro.cas.serviceUrl = "http://localhost:8080/app/shiro-cas"
-security.shiro.cas.dynamicServerName = true
-        """)
-
-        then: "throws an error"
-        1 * mockLog.error(_)
     }
 
     static void init(String script) {

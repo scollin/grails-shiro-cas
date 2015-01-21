@@ -16,35 +16,41 @@ class ShiroCasConfigUtils {
     static String serverUrl
     private static String serviceUrl
     private static String loginUrl
+    private static String configLoginUrl
     private static String logoutUrl
+    private static String configLogoutUrl
     private static String failureUrl
-    private static String serviceUri
-    private static String failureUri
-    private static boolean dynamicServerName
+    private static String servicePath
+    private static String failurePath
+    private static def loginParameters
+    static boolean hasDynamicServerName
     static String singleSignOutArtifactParameterName
     static String singleSignOutLogoutParameterName
     private static String filterChainDefinitions
-    private static ConfigObject casConfig
 
     static void initialize(ConfigObject config) {
-        casConfig = config.security.shiro.cas
+        def casConfig = config.security.shiro.cas
 
         singleSignOutArtifactParameterName = casConfig.singleSignOut.artifactParameterName ?: "ticket"
         singleSignOutLogoutParameterName = casConfig.singleSignOut.logoutParameterName ?: "logoutRequest"
         filterChainDefinitions = config.security.shiro.filter.filterChainDefinitions ?: ""
-        dynamicServerName = casConfig.dynamicServerName ?: false
+        hasDynamicServerName = casConfig.servicePath ? true : false
         serverUrl = stripTrailingSlash(casConfig.serverUrl ?: "")
         serviceUrl = stripTrailingSlash(casConfig.serviceUrl ?: "")
         failureUrl = casConfig.failureUrl ?: null
 
-        if(dynamicServerName){
-            serviceUri = stripTrailingSlash(casConfig.serviceUri ?: "")
-            failureUri = casConfig.failureUri ?: null
+        configLoginUrl = casConfig.loginUrl ?: null
+        configLogoutUrl = casConfig.logoutUrl ?: null
+        loginParameters = casConfig.loginParameters ?: null
+
+        if(hasDynamicServerName){
+            servicePath = stripTrailingSlash(casConfig.servicePath ?: "")
+            failurePath = casConfig.failurePath ?: null
             loginUrl = ""
             logoutUrl = ""
 
-            if (!serviceUri) {
-                log.error("Invalid application configuration: security.shiro.cas.serviceUri is required when enabling security.shiro.cas.dynamicServerName; it should be /mycontextpath/shiro-cas")
+            if (!servicePath) {
+                log.error("Invalid application configuration: security.shiro.cas.servicePath is required when enabling security.shiro.cas.dynamicServerName; it should be /mycontextpath/shiro-cas")
             }
         }
         else{
@@ -62,11 +68,11 @@ class ShiroCasConfigUtils {
     }
 
     static String getServiceUrl() {
-        if(dynamicServerName && serviceUri){
+        if(hasDynamicServerName && servicePath){
             try{
                 def httpRequest = WebUtils.getHttpRequest(SecurityUtils.getSubject())
                 if(httpRequest) {
-                    def builder = UriComponentsBuilder.fromHttpUrl(getBaseUrl(httpRequest)).path(serviceUri)
+                    def builder = UriComponentsBuilder.fromHttpUrl(httpRequest.getRequestURL().toString()).replacePath(servicePath)
                     return builder.build().encode().toUriString()
                 }
             }catch(UnavailableSecurityManagerException ex){
@@ -78,11 +84,11 @@ class ShiroCasConfigUtils {
     }
 
     static String getFailureUrl() {
-        if(dynamicServerName && failureUri){
+        if(hasDynamicServerName && failurePath){
             try{
                 def httpRequest = WebUtils.getHttpRequest(SecurityUtils.getSubject())
                 if(httpRequest) {
-                    def builder = UriComponentsBuilder.fromHttpUrl(getBaseUrl(httpRequest)).path(failureUri)
+                    def builder = UriComponentsBuilder.fromHttpUrl(httpRequest.getRequestURL().toString()).replacePath(failurePath)
                     return builder.build().encode().toUriString()
                 }
             }catch(UnavailableSecurityManagerException ex){
@@ -94,11 +100,11 @@ class ShiroCasConfigUtils {
     }
 
     static String getLoginUrl() {
-        return dynamicServerName? assembleLoginUrl() : loginUrl
+        return hasDynamicServerName? assembleLoginUrl() : loginUrl
     }
 
     static String getLogoutUrl() {
-        return dynamicServerName? assembleLogoutUrl() : logoutUrl
+        return hasDynamicServerName? assembleLogoutUrl() : logoutUrl
     }
 
     static boolean isSingleSignOutDisabled() {
@@ -106,13 +112,12 @@ class ShiroCasConfigUtils {
     }
 
     private static String assembleLoginUrl() {
-        def builder = casConfig?.loginUrl ?
-                UriComponentsBuilder.fromHttpUrl(casConfig.loginUrl) :
+        def builder = configLoginUrl ?
+                UriComponentsBuilder.fromHttpUrl(configLoginUrl) :
                 UriComponentsBuilder.fromHttpUrl(serverUrl).path("/login").queryParam("service", getServiceUrl())
 
-        def params = casConfig?.loginParameters
-        if (params) {
-            params.each { name, value ->
+        if (loginParameters) {
+            loginParameters.each { name, value ->
                 builder.queryParam(name, value)
             }
         }
@@ -121,8 +126,8 @@ class ShiroCasConfigUtils {
     }
 
     private static String assembleLogoutUrl() {
-        def builder = casConfig?.logoutUrl ?
-                UriComponentsBuilder.fromHttpUrl(casConfig.logoutUrl) :
+        def builder = configLogoutUrl ?
+                UriComponentsBuilder.fromHttpUrl(configLogoutUrl) :
                 UriComponentsBuilder.fromHttpUrl(serverUrl).path("/logout").queryParam("service", getServiceUrl())
         return builder.build().encode().toUriString()
     }
@@ -142,9 +147,5 @@ class ShiroCasConfigUtils {
 
     private static String stripTrailingSlash(String url) {
         return url?.endsWith("/") ? url[0..-2] : url
-    }
-
-    private static String getBaseUrl(request){
-        return request.getScheme() + "://" + request.getServerName() + (("http".equals(request.getScheme()) && request.getServerPort() == 80 || "https".equals(request.getScheme()) && request.getServerPort() == 443) ? "" : (":" + request.getServerPort()) )
     }
 }
