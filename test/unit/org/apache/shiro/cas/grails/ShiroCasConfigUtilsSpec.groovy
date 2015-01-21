@@ -155,14 +155,12 @@ security.shiro.cas.singleSignOut.disabled = true
 
     void "dynamicServerName option handles multiple server names"(){
         setup:
-        def firstDomain = "test.server.com"
-        def secondDomain = "anothertest.server.com"
+        def firstUrl = "http://test.server.com"
+        def secondUrl = "http://anothertest.server.com"
 
         GroovyMock(SecurityUtils, global: true)
         GroovyMock(WebUtils, global: true)
         def httpServletRequest = Mock(HttpServletRequest)
-        httpServletRequest.getScheme() >> "http"
-        httpServletRequest.getServerPort() >> 80
         WebUtils.getHttpRequest(_) >> httpServletRequest
 
 
@@ -180,15 +178,15 @@ security.shiro.cas.failurePath = "/test/"
         def secondFailureUrl = ShiroCasConfigUtils.failureUrl
 
         then: "URLs overwridden using first domain"
-        2 * httpServletRequest.getServerName() >> firstDomain
-        firstServiceUrl == "http://" + firstDomain + "/test/shiro-cas"
-        firstFailureUrl == "http://" + firstDomain + "/test/"
+        3 * httpServletRequest.getRequestURL() >> new StringBuffer(firstUrl)
+        firstServiceUrl == firstUrl + "/test/shiro-cas"
+        firstFailureUrl == firstUrl + "/test/"
 
 
         then: "URLs overwridden using second domain"
-        2 * httpServletRequest.getServerName() >> secondDomain
-        secondServiceUrl == "http://" + secondDomain + "/test/shiro-cas"
-        secondFailureUrl == "http://" + secondDomain + "/test/"
+        3 * httpServletRequest.getRequestURL() >> new StringBuffer(secondUrl)
+        secondServiceUrl == secondUrl + "/test/shiro-cas"
+        secondFailureUrl == secondUrl + "/test/"
     }
 
     static void init(String script) {
