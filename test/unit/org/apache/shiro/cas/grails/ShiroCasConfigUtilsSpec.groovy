@@ -76,7 +76,6 @@ security.shiro.cas.loginUrl = "https://cas.example.com/customLogin"
 security.shiro.cas.logoutUrl = "https://cas.example.com/customLogout"
 security.shiro.cas.failureUrl = "https://app.example.com/casFailure"
 security.shiro.filter.filterChainDefinitions = "/other=otherFilter"
-security.shiro.filter.dynamicServerName = false
 security.shiro.cas.loginParameters.renew = true
 security.shiro.cas.singleSignOut.disabled = false
 security.shiro.cas.singleSignOut.artifactParameterName = "token"
@@ -173,7 +172,6 @@ security.shiro.cas.serverUrl = "https://localhost/cas"
 security.shiro.cas.serviceUrl = "http://localhost:8080/app/shiro-cas"
 security.shiro.cas.servicePath = "/test/shiro-cas"
 security.shiro.cas.failurePath = "/test/"
-security.shiro.cas.dynamicServerName = true
         """)
 
         def firstServiceUrl = ShiroCasConfigUtils.serviceUrl
