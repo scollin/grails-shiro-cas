@@ -25,8 +25,8 @@ Finally, you need a CAS-enabled Shiro realm.  Run `grails create-cas-realm` to c
 * `security.shiro.cas.singleSignOut.disabled` (OPTIONAL): Boolean value controlling whether to disable Single Sign Out.  By default, this is `false`, resulting in Single Sign Out support being enabled (matching the default for CAS).  Note that this configuration value is used at build-time to modify the `web.xml`, and externalized configuration will not be taken into account during that phase.
 * `security.shiro.cas.singleSignOut.artifactParameterName` (OPTIONAL): The parameter used to detect sessions in preparation for Single Sign Out support.  By default, this is `ticket` (matching the default for CAS).
 * `security.shiro.cas.singleSignOut.logoutParameterName` (OPTIONAL): The parameter used to detect logout requests.  By default, this is `logoutRequest` (matching the default for CAS).
-* `security.shiro.cas.servicePath` (OPTIONAL): This path is appended to the server's base-URL when constructing `security.shiro.cas.serviceUrl`. This should be the path relative to the server at which end-users can reach `/shiro-cas` within the current application.
-* `security.shiro.cas.failurePath` (OPTIONAL): This path is appended to the server's base-URL when constructing `security.shiro.cas.failureUrl`, the URL that users are redirected to if ticket validation fails.
+* `security.shiro.cas.servicePath` (OPTIONAL): Required for a multi-domain configuration. This path is appended to the server's base-URL when constructing `security.shiro.cas.serviceUrl`. This should be the path relative to the server at which end-users can reach `/shiro-cas` within the current application.
+* `security.shiro.cas.failurePath` (OPTIONAL): Optional with a multi-domain configuration. This path is appended to the server's base-URL when constructing `security.shiro.cas.failureUrl`, the URL that users are redirected to if ticket validation fails.
 
 ## Example configuration
 
