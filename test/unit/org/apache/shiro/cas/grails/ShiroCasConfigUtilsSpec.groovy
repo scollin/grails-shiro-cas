@@ -178,13 +178,13 @@ security.shiro.cas.failurePath = "/test/"
         def secondFailureUrl = ShiroCasConfigUtils.failureUrl
 
         then: "URLs overwridden using first domain"
-        3 * httpServletRequest.getRequestURL() >> new StringBuffer(firstUrl)
+        2 * httpServletRequest.getRequestURL() >> new StringBuffer(firstUrl)
         firstServiceUrl == firstUrl + "/test/shiro-cas"
         firstFailureUrl == firstUrl + "/test/"
 
 
         then: "URLs overwridden using second domain"
-        3 * httpServletRequest.getRequestURL() >> new StringBuffer(secondUrl)
+        2 * httpServletRequest.getRequestURL() >> new StringBuffer(secondUrl)
         secondServiceUrl == secondUrl + "/test/shiro-cas"
         secondFailureUrl == secondUrl + "/test/"
     }
