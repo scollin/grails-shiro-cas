@@ -36,7 +36,7 @@ class ShiroCasGrailsPlugin {
         shiroSecurityManager.propertyValues.add("subjectFactory", casSubjectFactory)
         if (!securityConfig.filter.config) {
 
-            if(ShiroCasConfigUtils.hasDynamicServerName){
+            if(ShiroCasConfigUtils.isServerNameDynamic()){
                 casFilter(DynamicServerNameCasFilter)
             }
             else{

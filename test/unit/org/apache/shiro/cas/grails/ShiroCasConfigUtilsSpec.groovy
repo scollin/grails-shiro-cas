@@ -153,7 +153,7 @@ security.shiro.cas.singleSignOut.disabled = true
         ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=casFilter\n"
     }
 
-    void "dynamicServerName option handles multiple server names"(){
+    void "enabling isServerNameDynamic handles multiple server names"(){
         setup:
         def firstUrl = "http://test.server.com"
         def secondUrl = "http://anothertest.server.com"
@@ -177,13 +177,15 @@ security.shiro.cas.failurePath = "/test/"
         def secondServiceUrl = ShiroCasConfigUtils.serviceUrl
         def secondFailureUrl = ShiroCasConfigUtils.failureUrl
 
-        then: "URLs overwridden using first domain"
+        then: "initialized"
+        2 * httpServletRequest.getRequestURL() >> new StringBuffer("http://default.com")
+        
+        then: "URLs overridden using first domain"
         2 * httpServletRequest.getRequestURL() >> new StringBuffer(firstUrl)
         firstServiceUrl == firstUrl + "/test/shiro-cas"
         firstFailureUrl == firstUrl + "/test/"
 
-
-        then: "URLs overwridden using second domain"
+        then: "URLs overridden using second domain"
         2 * httpServletRequest.getRequestURL() >> new StringBuffer(secondUrl)
         secondServiceUrl == secondUrl + "/test/shiro-cas"
         secondFailureUrl == secondUrl + "/test/"

@@ -23,7 +23,6 @@ class ShiroCasConfigUtils {
     private static String servicePath
     private static String failurePath
     private static def loginParameters
-    static boolean hasDynamicServerName
     static String singleSignOutArtifactParameterName
     static String singleSignOutLogoutParameterName
     private static String filterChainDefinitions
@@ -34,7 +33,7 @@ class ShiroCasConfigUtils {
         singleSignOutArtifactParameterName = casConfig.singleSignOut.artifactParameterName ?: "ticket"
         singleSignOutLogoutParameterName = casConfig.singleSignOut.logoutParameterName ?: "logoutRequest"
         filterChainDefinitions = config.security.shiro.filter.filterChainDefinitions ?: ""
-        hasDynamicServerName = casConfig.servicePath ? true : false
+
         serverUrl = stripTrailingSlash(casConfig.serverUrl ?: "")
         serviceUrl = stripTrailingSlash(casConfig.serviceUrl ?: "")
         failureUrl = casConfig.failureUrl ?: null
@@ -43,20 +42,10 @@ class ShiroCasConfigUtils {
         configLogoutUrl = casConfig.logoutUrl ?: null
         loginParameters = casConfig.loginParameters ?: null
 
-        if(hasDynamicServerName){
-            servicePath = stripTrailingSlash(casConfig.servicePath ?: "")
-            failurePath = casConfig.failurePath ?: null
-            loginUrl = ""
-            logoutUrl = ""
-
-            if (!servicePath) {
-                log.error("Invalid application configuration: security.shiro.cas.servicePath is required when enabling security.shiro.cas.dynamicServerName; it should be /mycontextpath/shiro-cas")
-            }
-        }
-        else{
-            loginUrl = serverUrl ? assembleLoginUrl() : ""
-            logoutUrl = serverUrl ? assembleLogoutUrl() : ""
-        }
+        servicePath = stripTrailingSlash(casConfig.servicePath ?: "")
+        failurePath = casConfig.failurePath ?: null
+        loginUrl = isServerNameDynamic() ? "" : assembleLoginUrl()
+        logoutUrl = isServerNameDynamic() ? "" : assembleLogoutUrl()
 
         if (!serverUrl) {
             log.error("Invalid application configuration: security.shiro.cas.serverUrl is required; it should be https://host:port/cas")
@@ -68,7 +57,7 @@ class ShiroCasConfigUtils {
     }
 
     static String getServiceUrl() {
-        if(hasDynamicServerName && servicePath){
+        if(isServerNameDynamic()){
             try{
                 def httpRequest = WebUtils.getHttpRequest(SecurityUtils.getSubject())
                 if(httpRequest) {
@@ -84,7 +73,7 @@ class ShiroCasConfigUtils {
     }
 
     static String getFailureUrl() {
-        if(hasDynamicServerName && failurePath){
+        if(isServerNameDynamic() && failurePath){
             try{
                 def httpRequest = WebUtils.getHttpRequest(SecurityUtils.getSubject())
                 if(httpRequest) {
@@ -100,18 +89,24 @@ class ShiroCasConfigUtils {
     }
 
     static String getLoginUrl() {
-        return hasDynamicServerName? assembleLoginUrl() : loginUrl
+        return isServerNameDynamic()? assembleLoginUrl() : loginUrl
     }
 
     static String getLogoutUrl() {
-        return hasDynamicServerName? assembleLogoutUrl() : logoutUrl
+        return isServerNameDynamic()? assembleLogoutUrl() : logoutUrl
     }
 
     static boolean isSingleSignOutDisabled() {
         return Holders.config.security.shiro.cas.singleSignOut.disabled ?: false
     }
 
+    static boolean isServerNameDynamic() {
+        return servicePath
+    }
+
     private static String assembleLoginUrl() {
+        if(!serverUrl) return ""
+        
         def builder = configLoginUrl ?
                 UriComponentsBuilder.fromHttpUrl(configLoginUrl) :
                 UriComponentsBuilder.fromHttpUrl(serverUrl).path("/login").queryParam("service", getServiceUrl())
@@ -126,6 +121,8 @@ class ShiroCasConfigUtils {
     }
 
     private static String assembleLogoutUrl() {
+        if(!serverUrl) return ""
+        
         def builder = configLogoutUrl ?
                 UriComponentsBuilder.fromHttpUrl(configLogoutUrl) :
                 UriComponentsBuilder.fromHttpUrl(serverUrl).path("/logout").queryParam("service", getServiceUrl())
