@@ -177,9 +177,6 @@ security.shiro.cas.failurePath = "/test/"
         def secondServiceUrl = ShiroCasConfigUtils.serviceUrl
         def secondFailureUrl = ShiroCasConfigUtils.failureUrl
 
-        then: "initialized"
-        2 * httpServletRequest.getRequestURL() >> new StringBuffer("http://default.com")
-        
         then: "URLs overridden using first domain"
         2 * httpServletRequest.getRequestURL() >> new StringBuffer(firstUrl)
         firstServiceUrl == firstUrl + "/test/shiro-cas"
