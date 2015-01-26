@@ -33,10 +33,10 @@ class ShiroCasUrlBuilder {
     }
 
     static ShiroCasUrlBuilder forLogin() {
-        return new ShiroCasUrlBuilder(ShiroCasConfigUtils.loginUrl)
+        return new ShiroCasUrlBuilder(ShiroCasConfigUtils.getLoginUrl())
     }
 
     static ShiroCasUrlBuilder forLogout() {
-        return new ShiroCasUrlBuilder(ShiroCasConfigUtils.logoutUrl)
+        return new ShiroCasUrlBuilder(ShiroCasConfigUtils.getLogoutUrl())
     }
 }

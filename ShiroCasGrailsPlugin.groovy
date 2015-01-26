@@ -36,14 +36,9 @@ class ShiroCasGrailsPlugin {
         shiroSecurityManager.propertyValues.add("subjectFactory", casSubjectFactory)
         if (!securityConfig.filter.config) {
 
-            if(ShiroCasConfigUtils.isServerNameDynamic()){
-                casFilter(DynamicServerNameCasFilter)
-            }
-            else{
-                casFilter(CasFilter) { bean ->
-                    if (ShiroCasConfigUtils.failureUrl) {
-                        failureUrl = ShiroCasConfigUtils.failureUrl
-                    }
+            casFilter(DynamicServerNameCasFilter) { bean ->
+                if (ShiroCasConfigUtils.failureUrl) {
+                    failureUrl = ShiroCasConfigUtils.failureUrl
                 }
             }
 
@@ -58,7 +53,7 @@ class ShiroCasGrailsPlugin {
             def shiroFilter = beanBuilder.getBeanDefinition("shiroFilter")
             shiroFilter.propertyValues.addPropertyValue("filterChainDefinitions", ShiroCasConfigUtils.shiroCasFilter)
             if (!securityConfig.filter.loginUrl) {
-                shiroFilter.propertyValues.addPropertyValue("loginUrl", ShiroCasConfigUtils.loginUrl)
+                shiroFilter.propertyValues.addPropertyValue("loginUrl", ShiroCasConfigUtils.getLoginUrl())
             }
         }
     }
