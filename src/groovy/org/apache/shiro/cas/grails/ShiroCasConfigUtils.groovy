@@ -9,24 +9,22 @@ import org.apache.shiro.UnavailableSecurityManagerException
 import org.apache.shiro.web.util.WebUtils
 import org.springframework.web.util.UriComponentsBuilder
 
+import javax.servlet.http.HttpServletRequest
+
 class ShiroCasConfigUtils {
     @PackageScope
     static Log log = LogFactory.getLog(ShiroCasConfigUtils)
 
-    static String serverUrl
-    private static String serviceUrl
-    private static String assembledLoginUrl
-    private static String assembledLogoutUrl
-
+    private static String serverUrl
+    private static String defaultServiceUrl
+    private static String defaultFailureUrl
     private static String configuredLoginUrl
     private static String configuredLogoutUrl
-
-    private static String failureUrl
     private static String servicePath
     private static String failurePath
-    private static def loginParameters
-    static String singleSignOutArtifactParameterName
-    static String singleSignOutLogoutParameterName
+    private static Map loginParameters
+    private static String singleSignOutArtifactParameterName
+    private static String singleSignOutLogoutParameterName
     private static String filterChainDefinitions
 
     static void initialize(ConfigObject config) {
@@ -37,120 +35,113 @@ class ShiroCasConfigUtils {
         filterChainDefinitions = config.security.shiro.filter.filterChainDefinitions ?: ""
 
         serverUrl = stripTrailingSlash(casConfig.serverUrl ?: "")
-        serviceUrl = stripTrailingSlash(casConfig.serviceUrl ?: "")
-        failureUrl = casConfig.failureUrl ?: null
-        loginParameters = casConfig.loginParameters ?: null
-
-        servicePath = stripTrailingSlash(casConfig.servicePath ?: "")
-        failurePath = casConfig.failurePath ?: null
-        
-
-        configuredLoginUrl = casConfig.loginUrl ?: null
-        configuredLogoutUrl = casConfig.logoutUrl ?: null
-
-        if(configuredLoginUrl || !isServerNameDynamic()){
-            assembledLoginUrl = assembleNewLoginUrl()
-        }
-
-        if(configuredLogoutUrl || !isServerNameDynamic()){
-            assembledLogoutUrl = assembleNewLogoutUrl()
-        }
+        defaultServiceUrl = stripTrailingSlash(casConfig.serviceUrl ?: "")
 
         if (!serverUrl) {
             log.error("Invalid application configuration: security.shiro.cas.serverUrl is required; it should be https://host:port/cas")
         }
-        
-        if (!serviceUrl) {
+
+        if (!defaultServiceUrl) {
             log.error("Invalid application configuration: security.shiro.cas.serviceUrl is required; it should be http://host:port/mycontextpath/shiro-cas")
         }
+
+        defaultFailureUrl = casConfig.failureUrl ?: null
+        configuredLoginUrl = casConfig.loginUrl ?: null
+        configuredLogoutUrl = casConfig.logoutUrl ?: null
+        servicePath = stripTrailingSlash(casConfig.servicePath ?: "")
+        failurePath = casConfig.failurePath ?: null
+        loginParameters = casConfig.loginParameters ?: null
+    }
+
+    static String getServerUrl() {
+        return serverUrl
+    }
+
+    static String getSingleSignOutArtifactParameterName() {
+        return singleSignOutArtifactParameterName
+    }
+
+    static String getSingleSignOutLogoutParameterName() {
+        return singleSignOutLogoutParameterName
     }
 
     static String getServiceUrl() {
-        if(isServerNameDynamic()){
-            try{
-                def httpRequest = WebUtils.getHttpRequest(SecurityUtils.getSubject())
-                if(httpRequest) {
-                    def builder = UriComponentsBuilder.fromHttpUrl(httpRequest.getRequestURL().toString()).replacePath(servicePath)
-                    return builder.build().encode().toUriString()
+        if (servicePath) {
+            try {
+                def httpRequest = WebUtils.getHttpRequest(SecurityUtils.subject)
+                if (httpRequest) {
+                    return requestUrlWithAlternatePath(httpRequest, servicePath)
                 }
-            }catch(UnavailableSecurityManagerException ex){
-                log.info("Unable to get a dynamic serviceUrl, reverting to default.", ex)
+            } catch (UnavailableSecurityManagerException ex) {
+                log.debug("Unable to get a dynamic serviceUrl, reverting to default.", ex)
             }
         }
-
-        return serviceUrl
+        return defaultServiceUrl
     }
 
     static String getFailureUrl() {
-        if(isServerNameDynamic() && failurePath){
-            try{
-                def httpRequest = WebUtils.getHttpRequest(SecurityUtils.getSubject())
-                if(httpRequest) {
-                    def builder = UriComponentsBuilder.fromHttpUrl(httpRequest.getRequestURL().toString()).replacePath(failurePath)
-                    return builder.build().encode().toUriString()
+        if (failurePath) {
+            try {
+                def httpRequest = WebUtils.getHttpRequest(SecurityUtils.subject)
+                if (httpRequest) {
+                    return requestUrlWithAlternatePath(httpRequest, failurePath)
                 }
-            }catch(UnavailableSecurityManagerException ex){
-                log.info("Unable to get a dynamic failureUrl, reverting to default.", ex)
+            } catch (UnavailableSecurityManagerException ex) {
+                log.debug("Unable to get a dynamic failureUrl, reverting to default.", ex)
             }
         }
+        return defaultFailureUrl
+    }
 
-        return failureUrl
+    private static String requestUrlWithAlternatePath(HttpServletRequest request, String path) {
+        return UriComponentsBuilder.fromHttpUrl(request.requestURL.toString()).replacePath(path).build().encode().toUriString()
+    }
+
+    static String getDefaultLoginUrl() {
+        return assembleLoginUrl(defaultServiceUrl)
     }
 
     static String getLoginUrl() {
-        return assembledLoginUrl ?: assembleNewLoginUrl()
+        return assembleLoginUrl(serviceUrl)
+    }
+
+    static String getDefaultLogoutUrl() {
+        return assembleLogoutUrl(defaultServiceUrl)
     }
 
     static String getLogoutUrl() {
-        return assembledLogoutUrl ?: assembleNewLogoutUrl()
+        return assembleLogoutUrl(serviceUrl)
     }
 
-    static boolean isSingleSignOutDisabled() {
-        return Holders.config.security.shiro.cas.singleSignOut.disabled ?: false
-    }
-
-    static boolean isServerNameDynamic() {
-        return servicePath
-    }
-
-    private static String assembleNewLoginUrl() {
-        
+    private static String assembleLoginUrl(String serviceUrl) {
         def builder
-        if(configuredLoginUrl){
-            //if we have a configuredLoginUrl, then use that.
+        if (configuredLoginUrl) { // if we have a configuredLoginUrl, then use that.
             builder = UriComponentsBuilder.fromHttpUrl(configuredLoginUrl)
+        } else { // if we don't have a configuredLoginUrl, build one from the serverUrl.
+            if (!serverUrl) return ""
+            builder = UriComponentsBuilder.fromHttpUrl(serverUrl).path("/login").queryParam("service", serviceUrl)
         }
-        else{
-            if(!serverUrl) return ""
-            
-            //if we don't have a configuredLoginUrl, build one from the serverUrl.
-            builder = UriComponentsBuilder.fromHttpUrl(serverUrl).path("/login").queryParam("service", getServiceUrl())
-        }
-            
         if (loginParameters) {
             loginParameters.each { name, value ->
                 builder.queryParam(name, value)
             }
         }
-
         return builder.build().encode().toUriString()
     }
 
-    private static String assembleNewLogoutUrl() {
-
+    private static String assembleLogoutUrl(String serviceUrl) {
         def builder
-        if(configuredLogoutUrl){
-            //if we have a configuredLogoutUrl, then use that.
+        if (configuredLogoutUrl) { // if we have a configuredLogoutUrl, then use that.
             builder = UriComponentsBuilder.fromHttpUrl(configuredLogoutUrl)
+        } else { // if we don't have a configuredLogoutUrl, build one from the serverUrl.
+            if (!serverUrl) return ""
+            builder = UriComponentsBuilder.fromHttpUrl(serverUrl).path("/logout").queryParam("service", serviceUrl)
         }
-        else{
-            if(!serverUrl) return ""
-            
-            //if we don't have a configuredLogoutUrl, build one from the serverUrl.
-            builder = UriComponentsBuilder.fromHttpUrl(serverUrl).path("/logout").queryParam("service", getServiceUrl())
-        }
-
         return builder.build().encode().toUriString()
+    }
+
+    static boolean isSingleSignOutDisabled() {
+        return Holders.config.security.shiro.cas.singleSignOut.disabled ?: false
     }
 
     static String getShiroCasFilter() {
