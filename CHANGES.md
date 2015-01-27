@@ -1,5 +1,7 @@
 # Unreleased
 
+* Add multi-domain support
+
 # 0.3.3 (2014-08-29)
 
 * Set `casTicketValidator` to use `UTF-8` as the encoding by default 

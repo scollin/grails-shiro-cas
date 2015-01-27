@@ -9,7 +9,7 @@ final class ShiroCasUtils {
 
     static void redirectToCasLogin(FilterConfig filter) {
         WebUtils.saveRequest(new TweakedRequest(filter.request))
-        filter.redirect(uri: ShiroCasConfigUtils.loginUrl)
+        filter.redirect(uri: ShiroCasConfigUtils.getLoginUrl())
     }
 
     /**
@@ -23,7 +23,7 @@ final class ShiroCasUtils {
         def subject = SecurityUtils.subject
         def principal = subject?.principal
         subject?.logout()
-        def destinationUrl = ShiroCasPrincipalManager.isFromCas(principal) ? ShiroCasConfigUtils.logoutUrl : defaultLogoutUrl
+        def destinationUrl = ShiroCasPrincipalManager.isFromCas(principal) ? ShiroCasConfigUtils.getLogoutUrl() : defaultLogoutUrl
         ShiroCasPrincipalManager.forgetPrincipal(principal)
         return destinationUrl
     }
