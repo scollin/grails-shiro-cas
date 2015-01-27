@@ -8,7 +8,7 @@ import org.jasig.cas.client.session.SingleSignOutHttpSessionListener
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator
 
 class ShiroCasGrailsPlugin {
-    def version = "0.3.4-SNAPSHOT"
+    def version = "0.4.0"
     def grailsVersion = "2.0 > *"
     def loadAfter = ["shiro"]
     def title = "Shiro CAS Plugin"
@@ -18,7 +18,8 @@ class ShiroCasGrailsPlugin {
     def developers = [
         [name: "David M. Carr", email: "dcarr@commercehub.com"],
         [name: "Ford Guo", email: "agile.guo@gmail.com"],
-        [name: "Gavin Hogan", email: "gavin@commercehub.com"]
+        [name: "Gavin Hogan", email: "gavin@commercehub.com"],
+        [name: "Curt Hostetter", email: "hostetcl@gmail.com"],
     ]
     def organization = [ name: "CommerceHub", url: "http://www.commercehub.com/" ]
     def issueManagement = [ system: "GitHub", url: "https://github.com/commercehub-oss/grails-shiro-cas/issues" ]

@@ -1,5 +1,7 @@
 # Unreleased
 
+# 0.4.0 (2015-01-27)
+
 * Add multi-domain support
 
 # 0.3.3 (2014-08-29)
