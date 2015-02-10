@@ -16,12 +16,12 @@ class ShiroCasConfigUtils {
     static Log log = LogFactory.getLog(ShiroCasConfigUtils)
 
     private static String serverUrl
-    private static String defaultServiceUrl
-    private static String defaultFailureUrl
     private static String configuredLoginUrl
     private static String configuredLogoutUrl
+    private static String defaultBaseServiceUrl
     private static String servicePath
     private static String failurePath
+    private static Boolean multiDomain
     private static Map loginParameters
     private static String singleSignOutArtifactParameterName
     private static String singleSignOutLogoutParameterName
@@ -33,24 +33,30 @@ class ShiroCasConfigUtils {
         singleSignOutArtifactParameterName = casConfig.singleSignOut.artifactParameterName ?: "ticket"
         singleSignOutLogoutParameterName = casConfig.singleSignOut.logoutParameterName ?: "logoutRequest"
         filterChainDefinitions = config.security.shiro.filter.filterChainDefinitions ?: ""
+        loginParameters = casConfig.loginParameters ?: null
 
+        // CAS server configuration
         serverUrl = stripTrailingSlash(casConfig.serverUrl ?: "")
-        defaultServiceUrl = stripTrailingSlash(casConfig.serviceUrl ?: "")
+        configuredLoginUrl = casConfig.loginUrl ?: null
+        configuredLogoutUrl = casConfig.logoutUrl ?: null
+
+        // Calling service configuration
+        defaultBaseServiceUrl = stripTrailingSlash(casConfig.baseServiceUrl ?: "")
+        servicePath = casConfig.servicePath ?: ""
+        failurePath = casConfig.failurePath ?: ""
+        multiDomain = casConfig.multiDomain
 
         if (!serverUrl) {
             log.error("Invalid application configuration: security.shiro.cas.serverUrl is required; it should be https://host:port/cas")
         }
 
-        if (!defaultServiceUrl) {
-            log.error("Invalid application configuration: security.shiro.cas.serviceUrl is required; it should be http://host:port/mycontextpath/shiro-cas")
+        if (!defaultBaseServiceUrl) {
+            log.error("Invalid application configuration: security.shiro.cas.baseServiceUrl is required; it should be http://host:port/mycontextpath/")
         }
 
-        defaultFailureUrl = casConfig.failureUrl ?: null
-        configuredLoginUrl = casConfig.loginUrl ?: null
-        configuredLogoutUrl = casConfig.logoutUrl ?: null
-        servicePath = stripTrailingSlash(casConfig.servicePath ?: "")
-        failurePath = casConfig.failurePath ?: null
-        loginParameters = casConfig.loginParameters ?: null
+        if (!servicePath) {
+            log.error("Invalid application configuration: security.shiro.cas.servicePath is required; it should be /shiro-cas")
+        }
     }
 
     static String getServerUrl() {
@@ -66,39 +72,34 @@ class ShiroCasConfigUtils {
     }
 
     static String getServiceUrl() {
-        if (servicePath) {
-            try {
-                def httpRequest = WebUtils.getHttpRequest(SecurityUtils.subject)
-                if (httpRequest) {
-                    return requestUrlWithAlternatePath(httpRequest, servicePath)
-                }
-            } catch (UnavailableSecurityManagerException ex) {
-                log.debug("Unable to get a dynamic serviceUrl, reverting to default.", ex)
-            }
-        }
-        return defaultServiceUrl
+        return baseServiceUrl + servicePath
     }
 
     static String getFailureUrl() {
-        if (failurePath) {
+        return failurePath ? baseServiceUrl + failurePath : ""
+    }
+
+    private static String getBaseServiceUrl() {
+        if (multiDomain) {
             try {
                 def httpRequest = WebUtils.getHttpRequest(SecurityUtils.subject)
                 if (httpRequest) {
-                    return requestUrlWithAlternatePath(httpRequest, failurePath)
+                    return baseUrlFromRequest(httpRequest)
                 }
             } catch (UnavailableSecurityManagerException ex) {
-                log.debug("Unable to get a dynamic failureUrl, reverting to default.", ex)
+                log.debug("Unable to get a dynamic baseServiceUrl, reverting to default.", ex)
             }
         }
-        return defaultFailureUrl
+
+        return defaultBaseServiceUrl
     }
 
-    private static String requestUrlWithAlternatePath(HttpServletRequest request, String path) {
-        return UriComponentsBuilder.fromHttpUrl(request.requestURL.toString()).replacePath(path).build().encode().toUriString()
+    private static String baseUrlFromRequest(HttpServletRequest request) {
+        return stripTrailingSlash(UriComponentsBuilder.fromHttpUrl(request.requestURL.toString()).replacePath("").build().encode().toUriString())
     }
 
     static String getDefaultLoginUrl() {
-        return assembleLoginUrl(defaultServiceUrl)
+        return assembleLoginUrl(defaultBaseServiceUrl + servicePath)
     }
 
     static String getLoginUrl() {
@@ -106,7 +107,7 @@ class ShiroCasConfigUtils {
     }
 
     static String getDefaultLogoutUrl() {
-        return assembleLogoutUrl(defaultServiceUrl)
+        return assembleLogoutUrl(defaultBaseServiceUrl + servicePath)
     }
 
     static String getLogoutUrl() {

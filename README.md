@@ -21,7 +21,7 @@ Finally, you need a CAS-enabled Shiro realm.  Run `grails create-cas-realm` to c
 * `security.shiro.cas.failureUrl` (RECOMMENDED): The URL that users are redirected to if ticket validation fails.  If this is not specified, ticket validation failures will result in `NullPointerException`s being thrown.
 * `security.shiro.cas.loginUrl` (OPTIONAL): The URL that users are redirected to when login is required.  By default, this directs users to `/login` within the `serverUrl`, passing along the service as a query parameter.
 * `security.shiro.cas.logoutUrl` (OPTIONAL): The URL that users are redirected to when logging out.  By default, this directs users to `/logout` within the `serverUrl`, passing along the service as a query parameter.
-* `security.shiro.cas.loginParameters` (OPTIONAL): Key, Value pairs to be added to the generated or explicitly set loginUrl. (see [CAS Parameters](http://www.jasig.org/cas/protocol#parameters) for more details on how this is used) 
+* `security.shiro.cas.loginParameters` (OPTIONAL): Key, Value pairs to be added to the generated or explicitly set loginUrl. (see [CAS Parameters](http://www.jasig.org/cas/protocol#parameters) for more details on how this is used)
 * `security.shiro.cas.singleSignOut.disabled` (OPTIONAL): Boolean value controlling whether to disable Single Sign Out.  By default, this is `false`, resulting in Single Sign Out support being enabled (matching the default for CAS).  Note that this configuration value is used at build-time to modify the `web.xml`, and externalized configuration will not be taken into account during that phase.
 * `security.shiro.cas.singleSignOut.artifactParameterName` (OPTIONAL): The parameter used to detect sessions in preparation for Single Sign Out support.  By default, this is `ticket` (matching the default for CAS).
 * `security.shiro.cas.singleSignOut.logoutParameterName` (OPTIONAL): The parameter used to detect logout requests.  By default, this is `logoutRequest` (matching the default for CAS).
@@ -38,7 +38,8 @@ A valid configuration would be:
 
 ```groovy
 security.shiro.cas.serverUrl='https://sso.example.com/cas'
-security.shiro.cas.serviceUrl='https://apps.example.com/my-app/shiro-cas'
+security.shiro.cas.baseServiceUrl='https://apps.example.com/my-app/'
+security.shiro.cas.servicePath='/shiro-cas'
 ```
 
 ### Example multi-domain configuration
@@ -47,12 +48,13 @@ Assuming that:
 * your CAS instance is deployed at context path `/cas` on `sso.example.com` on the default HTTPS port
 * your Grails application is accessed via a load-balancer at https://\*.example.com/my-app, where \* indicates a wildcard.
 
-A valid configuration would be:
+Simply add `security.shiro.cas.multiDomain=true` to your existing configuration:
 
 ```groovy
-security.shiro.cas.servicePath='/my-app/shiro-cas'
 security.shiro.cas.serverUrl='https://sso.example.com/cas'
-security.shiro.cas.serviceUrl='https://default.example.com' + security.shiro.cas.servicePath //default serviceUrl
+security.shiro.cas.baseServiceUrl='https://apps.example.com/my-app/'
+security.shiro.cas.servicePath='/shiro-cas'
+security.shiro.cas.multiDomain=true
 ```
 
 # Accessing URLs
