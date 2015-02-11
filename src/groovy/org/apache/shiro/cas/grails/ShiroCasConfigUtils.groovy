@@ -21,7 +21,6 @@ class ShiroCasConfigUtils {
     private static String defaultBaseServiceUrl
     private static String servicePath
     private static String failurePath
-    private static Boolean multiDomain
     private static Map loginParameters
     private static String singleSignOutArtifactParameterName
     private static String singleSignOutLogoutParameterName
@@ -50,7 +49,6 @@ class ShiroCasConfigUtils {
         configuredLogoutUrl = config.security.shiro.cas.logoutUrl ?: null
 
         failurePath = config.security.shiro.cas.failurePath ?: ""
-        multiDomain = config.security.shiro.cas.multiDomain
     }
 
     static private boolean minimalConfigurationValid() {
@@ -90,15 +88,13 @@ class ShiroCasConfigUtils {
     }
 
     private static String getBaseServiceUrl() {
-        if (multiDomain) {
-            try {
-                def httpRequest = WebUtils.getHttpRequest(SecurityUtils.subject)
-                if (httpRequest) {
-                    return baseUrlFromRequest(httpRequest)
-                }
-            } catch (UnavailableSecurityManagerException ex) {
-                log.debug("Unable to get a dynamic baseServiceUrl, reverting to default.", ex)
+        try {
+            def httpRequest = WebUtils.getHttpRequest(SecurityUtils.subject)
+            if (httpRequest) {
+                return baseUrlFromRequest(httpRequest)
             }
+        } catch (UnavailableSecurityManagerException ex) {
+            log.debug("Unable to get a dynamic baseServiceUrl, reverting to default.", ex)
         }
 
         return defaultBaseServiceUrl

@@ -51,7 +51,6 @@ security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
 security.shiro.cas.baseServiceUrl = "https://localhost:8080/"
 security.shiro.cas.servicePath = "/app/shiro-cas"
 security.shiro.cas.failurePath = "/app/casFailure"
-security.shiro.cas.multiDomain = true
         """)
     }
 }

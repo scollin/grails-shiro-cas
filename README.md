@@ -26,13 +26,12 @@ Finally, you need a CAS-enabled Shiro realm.  Run `grails create-cas-realm` to c
 * `security.shiro.cas.singleSignOut.disabled` (OPTIONAL): Boolean value controlling whether to disable Single Sign Out.  By default, this is `false`, resulting in Single Sign Out support being enabled (matching the default for CAS).  Note that this configuration value is used at build-time to modify the `web.xml`, and externalized configuration will not be taken into account during that phase.
 * `security.shiro.cas.singleSignOut.artifactParameterName` (OPTIONAL): The parameter used to detect sessions in preparation for Single Sign Out support.  By default, this is `ticket` (matching the default for CAS).
 * `security.shiro.cas.singleSignOut.logoutParameterName` (OPTIONAL): The parameter used to detect logout requests.  By default, this is `logoutRequest` (matching the default for CAS).
-* `security.shiro.cas.multiDomain` (OPTIONAL): Set to `true` for a multi-domain scenario. This will result in the server's base URL being substituted for the `security.shiro.cas.baseServiceUrl` if available.
 
 ## Example configuration
 
 Assuming that:
 * your CAS instance is deployed at context path `/cas` on `sso.example.com` on the default HTTPS port
-* your Grails application is accessed via a load-balancer at https://apps.example.com/my-app
+* your Grails application is accessed at https://apps.example.com/my-app
 
 A valid configuration would be:
 
@@ -42,20 +41,14 @@ security.shiro.cas.baseServiceUrl='https://apps.example.com/'
 security.shiro.cas.servicePath='/my-app/shiro-cas'
 ```
 
-### Example multi-domain configuration
+### Multi-domain Support
+
 Assuming that:
 * your end-users use more than one domain to access the application
 * your CAS instance is deployed at context path `/cas` on `sso.example.com` on the default HTTPS port
 * your Grails application is accessed via a load-balancer at https://\*.example.com/my-app, where \* indicates a wildcard.
 
-Simply add `security.shiro.cas.multiDomain=true` to your existing configuration:
-
-```groovy
-security.shiro.cas.serverUrl='https://sso.example.com/cas'
-security.shiro.cas.baseServiceUrl='https://apps.example.com/'
-security.shiro.cas.servicePath='/my-app/shiro-cas'
-security.shiro.cas.multiDomain=true
-```
+This plugin will automatically use the service base URL from the request, and return to the requesting service.
 
 # Accessing URLs
 
