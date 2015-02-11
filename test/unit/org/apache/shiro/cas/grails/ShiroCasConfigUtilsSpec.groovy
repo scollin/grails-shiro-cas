@@ -101,12 +101,12 @@ class ShiroCasConfigUtilsSpec extends Specification {
         0 * mockLog.error(_)
 
         and: "the configured values are used"
-        ShiroCasConfigUtils.serverUrl == "https://localhost/cas"
+        ShiroCasConfigUtils.serverUrl == "https://cas.example.com/cas"
         ShiroCasConfigUtils.serviceUrl == "https://localhost:8080/app/shiro-cas"
 
         and: "other values are either defaulted or based on the configured values"
-        ShiroCasConfigUtils.defaultLoginUrl == "https://localhost/cas/login?service=https://localhost:8080/app/shiro-cas&renew=true&gateway=true&welcome=Welcome%20to%20Shiro%20Cas"
-        ShiroCasConfigUtils.defaultLogoutUrl == "https://localhost/cas/logout?service=https://localhost:8080/app/shiro-cas"
+        ShiroCasConfigUtils.defaultLoginUrl == "https://cas.example.com/cas/login?service=https://localhost:8080/app/shiro-cas&renew=true&gateway=true&welcome=Welcome%20to%20Shiro%20Cas"
+        ShiroCasConfigUtils.defaultLogoutUrl == "https://cas.example.com/cas/logout?service=https://localhost:8080/app/shiro-cas"
         ShiroCasConfigUtils.failureUrl == ""
         ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=singleSignOutFilter,casFilter\n"
     }
@@ -146,12 +146,12 @@ class ShiroCasConfigUtilsSpec extends Specification {
 
         then: "URLs overridden using first domain"
         2 * httpServletRequest.getRequestURL() >> new StringBuffer(firstUrl)
-        firstServiceUrl == firstUrl + "/test/shiro-cas"
-        firstFailureUrl == firstUrl + "/test/"
+        firstServiceUrl == firstUrl + "/app/shiro-cas"
+        firstFailureUrl == firstUrl + "/app/casFailure"
 
         then: "URLs overridden using second domain"
         2 * httpServletRequest.getRequestURL() >> new StringBuffer(secondUrl)
-        secondServiceUrl == secondUrl + "/test/shiro-cas"
-        secondFailureUrl == secondUrl + "/test/"
+        secondServiceUrl == secondUrl + "/app/shiro-cas"
+        secondFailureUrl == secondUrl + "/app/casFailure"
     }
 }
