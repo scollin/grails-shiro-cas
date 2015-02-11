@@ -28,35 +28,45 @@ class ShiroCasConfigUtils {
     private static String filterChainDefinitions
 
     static void initialize(ConfigObject config) {
-        def casConfig = config.security.shiro.cas
+        processRequiredConfiguration(config)
 
-        singleSignOutArtifactParameterName = casConfig.singleSignOut.artifactParameterName ?: "ticket"
-        singleSignOutLogoutParameterName = casConfig.singleSignOut.logoutParameterName ?: "logoutRequest"
+        if (minimalConfigurationValid()) {
+            processOptionalConfiguration(config)
+        }
+    }
+
+    static private void processRequiredConfiguration(ConfigObject config) {
+        serverUrl = stripTrailingSlash(config.security.shiro.cas.serverUrl ?: "")
+        defaultBaseServiceUrl = stripTrailingSlash(config.security.shiro.cas.baseServiceUrl ?: "")
+        servicePath = config.security.shiro.cas.servicePath ?: ""
+    }
+
+    static private void processOptionalConfiguration(ConfigObject config) {
+        singleSignOutArtifactParameterName = config.security.shiro.cas.singleSignOut.artifactParameterName ?: "ticket"
+        singleSignOutLogoutParameterName = config.security.shiro.cas.singleSignOut.logoutParameterName ?: "logoutRequest"
         filterChainDefinitions = config.security.shiro.filter.filterChainDefinitions ?: ""
-        loginParameters = casConfig.loginParameters ?: null
+        loginParameters = config.security.shiro.cas.loginParameters ?: null
+        configuredLoginUrl = config.security.shiro.cas.loginUrl ?: null
+        configuredLogoutUrl = config.security.shiro.cas.logoutUrl ?: null
 
-        // CAS server configuration
-        serverUrl = stripTrailingSlash(casConfig.serverUrl ?: "")
-        configuredLoginUrl = casConfig.loginUrl ?: null
-        configuredLogoutUrl = casConfig.logoutUrl ?: null
+        failurePath = config.security.shiro.cas.failurePath ?: ""
+        multiDomain = config.security.shiro.cas.multiDomain
+    }
 
-        // Calling service configuration
-        defaultBaseServiceUrl = stripTrailingSlash(casConfig.baseServiceUrl ?: "")
-        servicePath = casConfig.servicePath ?: ""
-        failurePath = casConfig.failurePath ?: ""
-        multiDomain = casConfig.multiDomain
-
+    static private boolean minimalConfigurationValid() {
         if (!serverUrl) {
             log.error("Invalid application configuration: security.shiro.cas.serverUrl is required; it should be https://host:port/cas")
         }
 
         if (!defaultBaseServiceUrl) {
-            log.error("Invalid application configuration: security.shiro.cas.baseServiceUrl is required; it should be http://host:port/mycontextpath/")
+            log.error("Invalid application configuration: security.shiro.cas.baseServiceUrl is required; it should be http://host:port/")
         }
 
         if (!servicePath) {
-            log.error("Invalid application configuration: security.shiro.cas.servicePath is required; it should be /shiro-cas")
+            log.error("Invalid application configuration: security.shiro.cas.servicePath is required; it should be /mycontextpath/shiro-cas")
         }
+
+        return serverUrl && defaultBaseServiceUrl && servicePath
     }
 
     static String getServerUrl() {

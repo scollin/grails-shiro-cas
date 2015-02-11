@@ -27,8 +27,8 @@ class ShiroCasConfigUtilsSpec extends Specification {
 
         then: "config errors are logged"
         1 * mockLog.error("Invalid application configuration: security.shiro.cas.serverUrl is required; it should be https://host:port/cas")
-        1 * mockLog.error('Invalid application configuration: security.shiro.cas.servicePath is required; it should be /shiro-cas')
-        1 * mockLog.error('Invalid application configuration: security.shiro.cas.baseServiceUrl is required; it should be http://host:port/mycontextpath/')
+        1 * mockLog.error('Invalid application configuration: security.shiro.cas.servicePath is required; it should be /mycontextpath/shiro-cas')
+        1 * mockLog.error('Invalid application configuration: security.shiro.cas.baseServiceUrl is required; it should be http://host:port/')
 
         and: "a default (but non-working) configuration is used"
         ShiroCasConfigUtils.serverUrl == ""
@@ -36,10 +36,6 @@ class ShiroCasConfigUtilsSpec extends Specification {
         ShiroCasConfigUtils.defaultLoginUrl == ""
         ShiroCasConfigUtils.defaultLogoutUrl == ""
         ShiroCasConfigUtils.failureUrl == ""
-        ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=singleSignOutFilter,casFilter\n"
-        !ShiroCasConfigUtils.singleSignOutDisabled
-        ShiroCasConfigUtils.singleSignOutArtifactParameterName == "ticket"
-        ShiroCasConfigUtils.singleSignOutLogoutParameterName == "logoutRequest"
     }
 
     void "minimal configuration works"() {
