@@ -17,8 +17,8 @@ Finally, you need a CAS-enabled Shiro realm.  Run `grails create-cas-realm` to c
 # Configuration
 
 * `security.shiro.cas.serverUrl` (REQUIRED): The URL of the CAS instance to authenticate against.  This should be an HTTPS URL.
-* `security.shiro.cas.baseServiceUrl` (REQUIRED): The base URL to pass to CAS as the `service` parameter (see [CAS Protocol](http://www.jasig.org/cas/protocol) for more details on how this is used).  This should be the protocol/host/port portion of your application server's URL.
-* `security.shiro.cas.servicePath` (REQUIRED): This should be the path at which end-users can reach the `/my-app/shiro-cas` path within the current application (which is automatically registered by this plugin).
+* `security.shiro.cas.baseServiceUrl` (OPTIONAL): The base URL to pass to CAS as the `service` parameter (see [CAS Protocol](http://www.jasig.org/cas/protocol) for more details on how this is used).  This should be the protocol/host/port portion of your application server's URL with the application context. If unset, the plugin will attempt to determine the base URL dynamically.
+* `security.shiro.cas.servicePath` (OPTIONAL): This should be the path at which end-users can reach the `/shiro-cas` path within the current application (which is automatically registered by this plugin). Defaults to `/shiro-cas`.
 * `security.shiro.cas.failurePath` (RECOMMENDED): The path that users are redirected to if ticket validation fails.  If this is not specified, ticket validation failures will result in `NullPointerException`s being thrown.
 * `security.shiro.cas.loginUrl` (OPTIONAL): The URL that users are redirected to when login is required.  By default, this directs users to `/login` within the `serverUrl`, passing along the service as a query parameter.
 * `security.shiro.cas.logoutUrl` (OPTIONAL): The URL that users are redirected to when logging out.  By default, this directs users to `/logout` within the `serverUrl`, passing along the service as a query parameter.
@@ -26,6 +26,15 @@ Finally, you need a CAS-enabled Shiro realm.  Run `grails create-cas-realm` to c
 * `security.shiro.cas.singleSignOut.disabled` (OPTIONAL): Boolean value controlling whether to disable Single Sign Out.  By default, this is `false`, resulting in Single Sign Out support being enabled (matching the default for CAS).  Note that this configuration value is used at build-time to modify the `web.xml`, and externalized configuration will not be taken into account during that phase.
 * `security.shiro.cas.singleSignOut.artifactParameterName` (OPTIONAL): The parameter used to detect sessions in preparation for Single Sign Out support.  By default, this is `ticket` (matching the default for CAS).
 * `security.shiro.cas.singleSignOut.logoutParameterName` (OPTIONAL): The parameter used to detect logout requests.  By default, this is `logoutRequest` (matching the default for CAS).
+
+## Sane defaults
+
+Assuming that:
+* your CAS instance is deployed at context path `/cas` on `sso.example.com` on the default HTTPS port
+* your Grails application is accessed at https://apps.example.com/my-app
+* your service endpoint exists at https://apps.example.com/my-app/shiro-cas
+
+The only required configuration parameter for this plugin is `security.shiro.cas.serverUrl` -- the plugin will attempt to determine the  `baseServiceUrl` dynamically, if not set. It will use `/shiro-cas` as the default `servicePath`.
 
 ## Example configuration
 
@@ -37,8 +46,8 @@ A valid configuration would be:
 
 ```groovy
 security.shiro.cas.serverUrl='https://sso.example.com/cas'
-security.shiro.cas.baseServiceUrl='https://apps.example.com/'
-security.shiro.cas.servicePath='/my-app/shiro-cas'
+security.shiro.cas.baseServiceUrl='https://apps.example.com/my-app'
+security.shiro.cas.servicePath='/shiro-cas'
 ```
 
 ### Multi-domain Support
@@ -46,9 +55,9 @@ security.shiro.cas.servicePath='/my-app/shiro-cas'
 Assuming that:
 * your end-users use more than one domain to access the application
 * your CAS instance is deployed at context path `/cas` on `sso.example.com` on the default HTTPS port
-* your Grails application is accessed via a load-balancer at https://\*.example.com/my-app, where \* indicates a wildcard.
+* your Grails application is accessed at https://\*.example.com/my-app, where \* indicates a wildcard.
 
-This plugin will automatically use the service base URL from the request, and return to the requesting service.
+No configuration changes are required. This plugin will automatically use the service base URL from the request, and return to the requesting service.
 
 # Accessing URLs
 

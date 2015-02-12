@@ -4,6 +4,8 @@ import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.shiro.SecurityUtils
 import org.apache.shiro.web.util.WebUtils
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.springframework.context.ApplicationContext
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest
@@ -27,18 +29,37 @@ class ShiroCasConfigUtilsSpec extends Specification {
 
         then: "config errors are logged"
         1 * mockLog.error("Invalid application configuration: security.shiro.cas.serverUrl is required; it should be https://host:port/cas")
-        1 * mockLog.error('Invalid application configuration: security.shiro.cas.servicePath is required; it should be /mycontextpath/shiro-cas')
-        1 * mockLog.error('Invalid application configuration: security.shiro.cas.baseServiceUrl is required; it should be http://host:port/')
-
-        and: "a default (but non-working) configuration is used"
-        ShiroCasConfigUtils.serverUrl == ""
-        ShiroCasConfigUtils.serviceUrl == ""
-        ShiroCasConfigUtils.defaultLoginUrl == ""
-        ShiroCasConfigUtils.defaultLogoutUrl == ""
-        ShiroCasConfigUtils.failureUrl == ""
+        1 * mockLog.error("Invalid application configuration: security.shiro.cas.baseServiceUrl is not set, and could not be dynamically determined")
     }
 
-    void "minimal configuration works"() {
+    void "minimal configuration is dynamically determined when the serverUrl is set"() {
+        setup: "a valid grailsApplication is present in Holders"
+        def mockLinkGenerator = GroovyMock(Object) {
+            getServerBaseURL() >> "https://app.default.com/default-context/"
+        }
+
+        def mockContext = GroovyMock(ApplicationContext) {
+            getBean('grailsLinkGenerator') >> mockLinkGenerator
+        }
+
+        Holders.grailsApplication = GroovyMock(GrailsApplication) {
+            getMainContext() >> mockContext
+        }
+
+        when: "initialized with only the serverUrl set"
+        ShiroCasConfigUtils.initialize(ConfigurationFixtures.serverUrlOnlyConfiguration)
+        Holders.grailsApplication?.mainContext?.getBean('grailsLinkGenerator')?.serverBaseURL
+
+        then:
+        0 * mockLog.error(_)
+
+        and: "the configured server URL is used"
+        ShiroCasConfigUtils.serverUrl == "https://cas.example.com/cas"
+        ShiroCasConfigUtils.serviceUrl == "https://app.default.com/default-context/shiro-cas"
+        ShiroCasConfigUtils.servicePath == "/shiro-cas"
+    }
+
+    void "user-supplied minimal configuration works"() {
         when: "initialized with a minimal configuration"
         ShiroCasConfigUtils.initialize(ConfigurationFixtures.minimalConfiguration)
 

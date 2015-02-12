@@ -1,6 +1,12 @@
 package org.apache.shiro.cas.grails
 
 class ConfigurationFixtures {
+    static ConfigObject getServerUrlOnlyConfiguration() {
+        return new ConfigSlurper().parse("""
+security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
+        """)
+    }
+
     static ConfigObject getMinimalConfiguration() {
         return new ConfigSlurper().parse("""
 security.shiro.cas.serverUrl = "https://cas.example.com/cas/"

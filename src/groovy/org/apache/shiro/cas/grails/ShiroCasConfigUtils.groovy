@@ -36,11 +36,13 @@ class ShiroCasConfigUtils {
 
     static private void processRequiredConfiguration(ConfigObject config) {
         serverUrl = stripTrailingSlash(config.security.shiro.cas.serverUrl ?: "")
-        defaultBaseServiceUrl = stripTrailingSlash(config.security.shiro.cas.baseServiceUrl ?: "")
-        servicePath = config.security.shiro.cas.servicePath ?: ""
+
+        def applicationBaseUrl = Holders.grailsApplication?.mainContext?.getBean('grailsLinkGenerator')?.serverBaseURL
+        defaultBaseServiceUrl = stripTrailingSlash(config.security.shiro.cas.baseServiceUrl ?: applicationBaseUrl)
     }
 
     static private void processOptionalConfiguration(ConfigObject config) {
+        servicePath = config.security.shiro.cas.servicePath ?: "/shiro-cas"
         singleSignOutArtifactParameterName = config.security.shiro.cas.singleSignOut.artifactParameterName ?: "ticket"
         singleSignOutLogoutParameterName = config.security.shiro.cas.singleSignOut.logoutParameterName ?: "logoutRequest"
         filterChainDefinitions = config.security.shiro.filter.filterChainDefinitions ?: ""
@@ -57,14 +59,10 @@ class ShiroCasConfigUtils {
         }
 
         if (!defaultBaseServiceUrl) {
-            log.error("Invalid application configuration: security.shiro.cas.baseServiceUrl is required; it should be http://host:port/")
+            log.error("Invalid application configuration: security.shiro.cas.baseServiceUrl is not set, and could not be dynamically determined")
         }
 
-        if (!servicePath) {
-            log.error("Invalid application configuration: security.shiro.cas.servicePath is required; it should be /mycontextpath/shiro-cas")
-        }
-
-        return serverUrl && defaultBaseServiceUrl && servicePath
+        return serverUrl && defaultBaseServiceUrl
     }
 
     static String getServerUrl() {
