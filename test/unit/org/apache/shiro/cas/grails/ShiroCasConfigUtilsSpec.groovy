@@ -14,9 +14,19 @@ class ShiroCasConfigUtilsSpec extends Specification {
     Log realLog
     Log mockLog = Mock(Log)
 
+    def mockLinkGenerator = GroovyMock(Object)
+
     void setup() {
         realLog = ShiroCasConfigUtils.log
         ShiroCasConfigUtils.log = mockLog
+
+        def mockContext = GroovyMock(ApplicationContext) {
+            getBean('grailsLinkGenerator') >> mockLinkGenerator
+        }
+
+        Holders.grailsApplication = GroovyMock(GrailsApplication) {
+            getMainContext() >> mockContext
+        }
     }
 
     void cleanup() {
@@ -33,22 +43,11 @@ class ShiroCasConfigUtilsSpec extends Specification {
     }
 
     void "minimal configuration is dynamically determined when the serverUrl is set"() {
-        setup: "a valid grailsApplication is present in Holders"
-        def mockLinkGenerator = GroovyMock(Object) {
-            getServerBaseURL() >> "https://app.default.com/default-context/"
-        }
-
-        def mockContext = GroovyMock(ApplicationContext) {
-            getBean('grailsLinkGenerator') >> mockLinkGenerator
-        }
-
-        Holders.grailsApplication = GroovyMock(GrailsApplication) {
-            getMainContext() >> mockContext
-        }
+        setup:
+        (1.._) * mockLinkGenerator.getServerBaseURL() >> "https://app.default.com/default-context/"
 
         when: "initialized with only the serverUrl set"
         ShiroCasConfigUtils.initialize(ConfigurationFixtures.serverUrlOnlyConfiguration)
-        Holders.grailsApplication?.mainContext?.getBean('grailsLinkGenerator')?.serverBaseURL
 
         then:
         0 * mockLog.error(_)
@@ -65,8 +64,9 @@ class ShiroCasConfigUtilsSpec extends Specification {
 
         then: "no errors are logged"
         0 * mockLog.error(_)
+        0 * mockLinkGenerator.getServerBaseURL()
 
-        and: "the configured values are used"
+        and: "the configured values take precedence"
         ShiroCasConfigUtils.serverUrl == "https://cas.example.com/cas"
         ShiroCasConfigUtils.serviceUrl == "https://localhost:8080/app/shiro-cas"
 
@@ -142,33 +142,16 @@ class ShiroCasConfigUtilsSpec extends Specification {
         ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=casFilter\n"
     }
 
-    void "enabling isServerNameDynamic handles multiple server names"(){
+    void "configurations without a baseServiceUrl use dynamic URLs from the application context"(){
         setup:
-        def firstUrl = "http://test.server.com"
-        def secondUrl = "http://anothertest.server.com"
-
-        GroovyMock(SecurityUtils, global: true)
-        GroovyMock(WebUtils, global: true)
-        def httpServletRequest = Mock(HttpServletRequest)
-        WebUtils.getHttpRequest(_) >> httpServletRequest
-
+        mockLinkGenerator.getServerBaseURL() >> "https://dynamic.test.server/ctx/"
 
         when: "initialized with a dynamicServerName configuration"
         ShiroCasConfigUtils.initialize(ConfigurationFixtures.configurationWithDynamicServerName)
 
-        def firstServiceUrl = ShiroCasConfigUtils.serviceUrl
-        def firstFailureUrl = ShiroCasConfigUtils.failureUrl
-        def secondServiceUrl = ShiroCasConfigUtils.serviceUrl
-        def secondFailureUrl = ShiroCasConfigUtils.failureUrl
-
         then: "URLs overridden using first domain"
-        2 * httpServletRequest.getRequestURL() >> new StringBuffer(firstUrl)
-        firstServiceUrl == firstUrl + "/app/shiro-cas"
-        firstFailureUrl == firstUrl + "/app/casFailure"
-
-        then: "URLs overridden using second domain"
-        2 * httpServletRequest.getRequestURL() >> new StringBuffer(secondUrl)
-        secondServiceUrl == secondUrl + "/app/shiro-cas"
-        secondFailureUrl == secondUrl + "/app/casFailure"
+        ShiroCasConfigUtils.serviceUrl == "https://dynamic.test.server/ctx/shiro-cas"
+        ShiroCasConfigUtils.failureUrl == "https://dynamic.test.server/ctx/casFailure"
+        def firstFailureUrl = ShiroCasConfigUtils.failureUrl
     }
 }

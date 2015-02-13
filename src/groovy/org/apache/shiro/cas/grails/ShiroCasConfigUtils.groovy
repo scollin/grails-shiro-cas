@@ -18,7 +18,7 @@ class ShiroCasConfigUtils {
     private static String serverUrl
     private static String configuredLoginUrl
     private static String configuredLogoutUrl
-    private static String defaultBaseServiceUrl
+    private static String configuredBaseServiceUrl
     private static String servicePath
     private static String failurePath
     private static Map loginParameters
@@ -32,37 +32,6 @@ class ShiroCasConfigUtils {
         if (minimalConfigurationValid()) {
             processOptionalConfiguration(config)
         }
-    }
-
-    static private void processRequiredConfiguration(ConfigObject config) {
-        serverUrl = stripTrailingSlash(config.security.shiro.cas.serverUrl ?: "")
-
-        def applicationBaseUrl = Holders.grailsApplication?.mainContext?.getBean('grailsLinkGenerator')?.serverBaseURL
-        defaultBaseServiceUrl = stripTrailingSlash(config.security.shiro.cas.baseServiceUrl ?: applicationBaseUrl)
-    }
-
-    static private void processOptionalConfiguration(ConfigObject config) {
-        servicePath = config.security.shiro.cas.servicePath ?: "/shiro-cas"
-        singleSignOutArtifactParameterName = config.security.shiro.cas.singleSignOut.artifactParameterName ?: "ticket"
-        singleSignOutLogoutParameterName = config.security.shiro.cas.singleSignOut.logoutParameterName ?: "logoutRequest"
-        filterChainDefinitions = config.security.shiro.filter.filterChainDefinitions ?: ""
-        loginParameters = config.security.shiro.cas.loginParameters ?: null
-        configuredLoginUrl = config.security.shiro.cas.loginUrl ?: null
-        configuredLogoutUrl = config.security.shiro.cas.logoutUrl ?: null
-
-        failurePath = config.security.shiro.cas.failurePath ?: ""
-    }
-
-    static private boolean minimalConfigurationValid() {
-        if (!serverUrl) {
-            log.error("Invalid application configuration: security.shiro.cas.serverUrl is required; it should be https://host:port/cas")
-        }
-
-        if (!defaultBaseServiceUrl) {
-            log.error("Invalid application configuration: security.shiro.cas.baseServiceUrl is not set, and could not be dynamically determined")
-        }
-
-        return serverUrl && defaultBaseServiceUrl
     }
 
     static String getServerUrl() {
@@ -85,25 +54,8 @@ class ShiroCasConfigUtils {
         return failurePath ? baseServiceUrl + failurePath : ""
     }
 
-    private static String getBaseServiceUrl() {
-        try {
-            def httpRequest = WebUtils.getHttpRequest(SecurityUtils.subject)
-            if (httpRequest) {
-                return baseUrlFromRequest(httpRequest)
-            }
-        } catch (UnavailableSecurityManagerException ex) {
-            log.debug("Unable to get a dynamic baseServiceUrl, reverting to default.", ex)
-        }
-
-        return defaultBaseServiceUrl
-    }
-
-    private static String baseUrlFromRequest(HttpServletRequest request) {
-        return stripTrailingSlash(UriComponentsBuilder.fromHttpUrl(request.requestURL.toString()).replacePath("").build().encode().toUriString())
-    }
-
     static String getDefaultLoginUrl() {
-        return assembleLoginUrl(defaultBaseServiceUrl + servicePath)
+        return assembleLoginUrl(configuredBaseServiceUrl + servicePath)
     }
 
     static String getLoginUrl() {
@@ -111,11 +63,48 @@ class ShiroCasConfigUtils {
     }
 
     static String getDefaultLogoutUrl() {
-        return assembleLogoutUrl(defaultBaseServiceUrl + servicePath)
+        return assembleLogoutUrl(configuredBaseServiceUrl + servicePath)
     }
 
     static String getLogoutUrl() {
         return assembleLogoutUrl(serviceUrl)
+    }
+
+    static private void processRequiredConfiguration(ConfigObject config) {
+        serverUrl = stripTrailingSlash(config.security.shiro.cas.serverUrl ?: "")
+        configuredBaseServiceUrl = stripTrailingSlash(config.security.shiro.cas.baseServiceUrl ?: "")
+    }
+
+    static private void processOptionalConfiguration(ConfigObject config) {
+        servicePath = config.security.shiro.cas.servicePath ?: "/shiro-cas"
+        singleSignOutArtifactParameterName = config.security.shiro.cas.singleSignOut.artifactParameterName ?: "ticket"
+        singleSignOutLogoutParameterName = config.security.shiro.cas.singleSignOut.logoutParameterName ?: "logoutRequest"
+        filterChainDefinitions = config.security.shiro.filter.filterChainDefinitions ?: ""
+        loginParameters = config.security.shiro.cas.loginParameters ?: null
+        configuredLoginUrl = config.security.shiro.cas.loginUrl ?: null
+        configuredLogoutUrl = config.security.shiro.cas.logoutUrl ?: null
+
+        failurePath = config.security.shiro.cas.failurePath ?: ""
+    }
+
+    static private boolean minimalConfigurationValid() {
+        if (!serverUrl) {
+            log.error("Invalid application configuration: security.shiro.cas.serverUrl is required; it should be https://host:port/cas")
+        }
+
+        if (!baseServiceUrl) {
+            log.error("Invalid application configuration: security.shiro.cas.baseServiceUrl is not set, and could not be dynamically determined")
+        }
+
+        return serverUrl && baseServiceUrl
+    }
+
+    private static String getBaseServiceUrl() {
+        return configuredBaseServiceUrl ?: defaultBaseServiceUrl
+    }
+
+    private static String getDefaultBaseServiceUrl() {
+        return stripTrailingSlash(Holders.grailsApplication?.mainContext?.getBean('grailsLinkGenerator')?.serverBaseURL)
     }
 
     private static String assembleLoginUrl(String serviceUrl) {
