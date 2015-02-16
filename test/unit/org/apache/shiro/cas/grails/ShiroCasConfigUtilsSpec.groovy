@@ -143,7 +143,8 @@ class ShiroCasConfigUtilsSpec extends Specification {
 
     void "configurations without a baseServiceUrl use dynamic URLs from the application context"(){
         setup:
-        mockLinkGenerator.getServerBaseURL() >> "https://dynamic.test.server/ctx/"
+        2 * mockLinkGenerator.getServerBaseURL() >> "https://dynamic.test.server/ctx/"
+        2 * mockLinkGenerator.getServerBaseURL() >> "https://second.test.server/ctx/"
 
         when: "initialized with a dynamicServerName configuration"
         ShiroCasConfigUtils.initialize(ConfigurationFixtures.configurationWithDynamicServerName)
@@ -151,6 +152,9 @@ class ShiroCasConfigUtilsSpec extends Specification {
         then: "URLs overridden using first domain"
         ShiroCasConfigUtils.serviceUrl == "https://dynamic.test.server/ctx/shiro-cas"
         ShiroCasConfigUtils.failureUrl == "https://dynamic.test.server/ctx/casFailure"
-        def firstFailureUrl = ShiroCasConfigUtils.failureUrl
+
+        then: "URLs overridden using second domain"
+        ShiroCasConfigUtils.serviceUrl == "https://second.test.server/ctx/shiro-cas"
+        ShiroCasConfigUtils.failureUrl == "https://second.test.server/ctx/casFailure"
     }
 }
