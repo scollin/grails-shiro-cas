@@ -84,11 +84,7 @@ class ShiroCasConfigUtils {
             log.error("Invalid application configuration: security.shiro.cas.serverUrl is required; it should be https://host:port/cas")
         }
 
-        if (!baseServiceUrl) {
-            log.error("Invalid application configuration: security.shiro.cas.baseServiceUrl is not set, and could not be dynamically determined")
-        }
-
-        return serverUrl && baseServiceUrl
+        return serverUrl
     }
 
     private static String getBaseServiceUrl() {

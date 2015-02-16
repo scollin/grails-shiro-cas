@@ -39,7 +39,6 @@ class ShiroCasConfigUtilsSpec extends Specification {
 
         then: "config errors are logged"
         1 * mockLog.error("Invalid application configuration: security.shiro.cas.serverUrl is required; it should be https://host:port/cas")
-        1 * mockLog.error("Invalid application configuration: security.shiro.cas.baseServiceUrl is not set, and could not be dynamically determined")
     }
 
     void "minimal configuration is dynamically determined when the serverUrl is set"() {
