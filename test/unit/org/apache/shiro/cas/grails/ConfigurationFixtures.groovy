@@ -42,7 +42,7 @@ security.shiro.cas.loginParameters.welcome = "Welcome to Shiro Cas"
         """)
     }
 
-    static ConfigObject getConfigurationWithSingleSignOnDisabled() {
+    static ConfigObject getConfigurationWithSingleSignOutDisabled() {
         return new ConfigSlurper().parse("""
 security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
 security.shiro.cas.baseServiceUrl = "https://localhost:8080/app/"

@@ -130,7 +130,7 @@ class ShiroCasConfigUtilsSpec extends Specification {
 
     void "single sign out support can be disabled"() {
         when: "initialized with a configuration including login parameters"
-        def config = ConfigurationFixtures.configurationWithSingleSignOnDisabled
+        def config = ConfigurationFixtures.configurationWithSingleSignOutDisabled
         Holders.config = config
         ShiroCasConfigUtils.initialize(config)
 
