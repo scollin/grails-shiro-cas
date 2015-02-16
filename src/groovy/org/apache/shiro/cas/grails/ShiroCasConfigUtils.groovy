@@ -54,16 +54,8 @@ class ShiroCasConfigUtils {
         return failurePath ? baseServiceUrl + failurePath : ""
     }
 
-    static String getDefaultLoginUrl() {
-        return assembleLoginUrl(configuredBaseServiceUrl + servicePath)
-    }
-
     static String getLoginUrl() {
         return assembleLoginUrl(serviceUrl)
-    }
-
-    static String getDefaultLogoutUrl() {
-        return assembleLogoutUrl(configuredBaseServiceUrl + servicePath)
     }
 
     static String getLogoutUrl() {

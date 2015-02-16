@@ -54,7 +54,7 @@ class ShiroCasGrailsPlugin {
             def shiroFilter = beanBuilder.getBeanDefinition("shiroFilter")
             shiroFilter.propertyValues.addPropertyValue("filterChainDefinitions", ShiroCasConfigUtils.shiroCasFilter)
             if (!securityConfig.filter.loginUrl) {
-                shiroFilter.propertyValues.addPropertyValue("loginUrl", ShiroCasConfigUtils.defaultLoginUrl)
+                shiroFilter.propertyValues.addPropertyValue("loginUrl", ShiroCasConfigUtils.loginUrl)
             }
         }
     }

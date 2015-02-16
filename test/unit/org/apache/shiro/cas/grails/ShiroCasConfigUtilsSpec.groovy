@@ -71,8 +71,8 @@ class ShiroCasConfigUtilsSpec extends Specification {
         ShiroCasConfigUtils.serviceUrl == "https://localhost:8080/app/shiro-cas"
 
         and: "other values are either defaulted or based on the configured values"
-        ShiroCasConfigUtils.defaultLoginUrl == "https://cas.example.com/cas/login?service=https://localhost:8080/app/shiro-cas"
-        ShiroCasConfigUtils.defaultLogoutUrl == "https://cas.example.com/cas/logout?service=https://localhost:8080/app/shiro-cas"
+        ShiroCasConfigUtils.loginUrl == "https://cas.example.com/cas/login?service=https://localhost:8080/app/shiro-cas"
+        ShiroCasConfigUtils.logoutUrl == "https://cas.example.com/cas/logout?service=https://localhost:8080/app/shiro-cas"
         ShiroCasConfigUtils.failureUrl == ""
         ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=singleSignOutFilter,casFilter\n"
         !ShiroCasConfigUtils.singleSignOutDisabled
@@ -90,8 +90,8 @@ class ShiroCasConfigUtilsSpec extends Specification {
         and: "the configured values are used"
         ShiroCasConfigUtils.serverUrl == "https://cas.example.com/cas"
         ShiroCasConfigUtils.serviceUrl == "https://localhost:8080/app/shiro-cas"
-        ShiroCasConfigUtils.defaultLoginUrl == "https://cas.example.com/cas/customLogin?renew=true"
-        ShiroCasConfigUtils.defaultLogoutUrl == "https://cas.example.com/cas/customLogout"
+        ShiroCasConfigUtils.loginUrl == "https://cas.example.com/cas/customLogin?renew=true"
+        ShiroCasConfigUtils.logoutUrl == "https://cas.example.com/cas/customLogout"
         ShiroCasConfigUtils.failureUrl == "https://localhost:8080/app/casFailure"
         ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=singleSignOutFilter,casFilter\n/other=otherFilter"
         !ShiroCasConfigUtils.singleSignOutDisabled
@@ -106,8 +106,8 @@ class ShiroCasConfigUtilsSpec extends Specification {
         then: "the trailing slash is ignored"
         ShiroCasConfigUtils.serverUrl == "https://cas.example.com/cas"
         ShiroCasConfigUtils.serviceUrl == "https://localhost:8080/app/shiro-cas"
-        ShiroCasConfigUtils.defaultLoginUrl == "https://cas.example.com/cas/login?service=https://localhost:8080/app/shiro-cas"
-        ShiroCasConfigUtils.defaultLogoutUrl == "https://cas.example.com/cas/logout?service=https://localhost:8080/app/shiro-cas"
+        ShiroCasConfigUtils.loginUrl == "https://cas.example.com/cas/login?service=https://localhost:8080/app/shiro-cas"
+        ShiroCasConfigUtils.logoutUrl == "https://cas.example.com/cas/logout?service=https://localhost:8080/app/shiro-cas"
     }
 
     void "specified login parameters are honored"() {
@@ -122,8 +122,8 @@ class ShiroCasConfigUtilsSpec extends Specification {
         ShiroCasConfigUtils.serviceUrl == "https://localhost:8080/app/shiro-cas"
 
         and: "other values are either defaulted or based on the configured values"
-        ShiroCasConfigUtils.defaultLoginUrl == "https://cas.example.com/cas/login?service=https://localhost:8080/app/shiro-cas&renew=true&gateway=true&welcome=Welcome%20to%20Shiro%20Cas"
-        ShiroCasConfigUtils.defaultLogoutUrl == "https://cas.example.com/cas/logout?service=https://localhost:8080/app/shiro-cas"
+        ShiroCasConfigUtils.loginUrl == "https://cas.example.com/cas/login?service=https://localhost:8080/app/shiro-cas&renew=true&gateway=true&welcome=Welcome%20to%20Shiro%20Cas"
+        ShiroCasConfigUtils.logoutUrl == "https://cas.example.com/cas/logout?service=https://localhost:8080/app/shiro-cas"
         ShiroCasConfigUtils.failureUrl == ""
         ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=singleSignOutFilter,casFilter\n"
     }
