@@ -1,5 +1,4 @@
 import grails.spring.BeanBuilder
-import org.apache.shiro.cas.CasFilter
 import org.apache.shiro.cas.CasSubjectFactory
 import org.apache.shiro.cas.grails.DynamicServerNameCasFilter
 import org.apache.shiro.cas.grails.ShiroCasConfigUtils

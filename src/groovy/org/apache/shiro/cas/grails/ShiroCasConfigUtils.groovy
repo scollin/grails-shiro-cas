@@ -4,12 +4,7 @@ import grails.util.Holders
 import groovy.transform.PackageScope
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.apache.shiro.SecurityUtils
-import org.apache.shiro.UnavailableSecurityManagerException
-import org.apache.shiro.web.util.WebUtils
 import org.springframework.web.util.UriComponentsBuilder
-
-import javax.servlet.http.HttpServletRequest
 
 class ShiroCasConfigUtils {
     @PackageScope
