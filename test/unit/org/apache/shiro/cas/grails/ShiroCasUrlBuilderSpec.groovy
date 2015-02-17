@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletResponse
 
 class ShiroCasUrlBuilderSpec extends Specification {
     def setup() {
-        ShiroCasConfigUtils.initialize(ConfigurationFixtures.minimalConfiguration)
+        ShiroCasConfigUtils.initialize(ConfigurationFixtures.staticConfiguration)
     }
 
     def "can build from login"() {

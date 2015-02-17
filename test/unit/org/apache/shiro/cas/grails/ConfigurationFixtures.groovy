@@ -1,61 +1,50 @@
 package org.apache.shiro.cas.grails
 
 class ConfigurationFixtures {
-    static ConfigObject getServerUrlOnlyConfiguration() {
-        return new ConfigSlurper().parse("""
-security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
-        """)
-    }
+    static final ConfigObject emptyConfiguration = parse("")
 
-    static ConfigObject getMinimalConfiguration() {
-        return new ConfigSlurper().parse("""
-security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
-security.shiro.cas.baseServiceUrl = "https://localhost:8080/app/"
-security.shiro.cas.servicePath = "/shiro-cas"
-        """)
-    }
+    static final ConfigObject serverUrlOnlyConfiguration = parse("""
+        |security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
+        |""".stripMargin())
 
-    static ConfigObject getFullConfiguration() {
-        return new ConfigSlurper().parse("""
-security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
-security.shiro.cas.baseServiceUrl = "https://localhost:8080/app/"
-security.shiro.cas.servicePath = "/shiro-cas"
-security.shiro.cas.loginUrl = "https://cas.example.com/cas/customLogin"
-security.shiro.cas.logoutUrl = "https://cas.example.com/cas/customLogout"
-security.shiro.cas.failurePath = "/casFailure"
-security.shiro.filter.filterChainDefinitions = "/other=otherFilter"
-security.shiro.cas.loginParameters.renew = true
-security.shiro.cas.singleSignOut.disabled = false
-security.shiro.cas.singleSignOut.artifactParameterName = "token"
-security.shiro.cas.singleSignOut.logoutParameterName = "slo"
-        """)
-    }
+    static final ConfigObject customDynamicConfiguration = parse("""
+        |security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
+        |security.shiro.cas.servicePath = "/cas-callback"
+        |security.shiro.cas.failurePath = "/cas-failure"
+        |""".stripMargin())
 
-    static ConfigObject getConfigurationWithLoginParameters() {
-        return new ConfigSlurper().parse("""
-security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
-security.shiro.cas.baseServiceUrl = "https://localhost:8080/app/"
-security.shiro.cas.servicePath = "/shiro-cas"
-security.shiro.cas.loginParameters.renew = true
-security.shiro.cas.loginParameters.gateway = true
-security.shiro.cas.loginParameters.welcome = "Welcome to Shiro Cas"
-        """)
-    }
+    static final ConfigObject staticConfiguration = parse("""
+        |security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
+        |security.shiro.cas.baseServiceUrl = "https://static.example.com/app/"
+        |""".stripMargin())
 
-    static ConfigObject getConfigurationWithSingleSignOutDisabled() {
-        return new ConfigSlurper().parse("""
-security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
-security.shiro.cas.baseServiceUrl = "https://localhost:8080/app/"
-security.shiro.cas.servicePath = "/shiro-cas"
-security.shiro.cas.singleSignOut.disabled = true
-        """)
-    }
+    static final ConfigObject fullConfiguration = parse("""
+        |security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
+        |security.shiro.cas.baseServiceUrl = "https://localhost:8080/app/"
+        |security.shiro.cas.servicePath = "/cas-callback"
+        |security.shiro.cas.failurePath = "/cas-failure"
+        |security.shiro.cas.loginUrl = "https://cas.example.com/cas/custom-login"
+        |security.shiro.cas.logoutUrl = "https://cas.example.com/cas/custom-logout"
+        |security.shiro.cas.loginParameters.renew = true
+        |security.shiro.cas.singleSignOut.disabled = false
+        |security.shiro.cas.singleSignOut.artifactParameterName = "token"
+        |security.shiro.cas.singleSignOut.logoutParameterName = "slo"
+        |security.shiro.filter.filterChainDefinitions = "/other=otherFilter"
+        |""".stripMargin())
 
-    static ConfigObject getConfigurationWithDynamicServerName() {
-        return new ConfigSlurper().parse("""
-security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
-security.shiro.cas.servicePath = "/shiro-cas"
-security.shiro.cas.failurePath = "/casFailure"
-        """)
+    static final ConfigObject configurationWithLoginParameters = parse("""
+        |security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
+        |security.shiro.cas.loginParameters.renew = true
+        |security.shiro.cas.loginParameters.gateway = true
+        |security.shiro.cas.loginParameters.welcome = "Welcome to Shiro Cas"
+        |""".stripMargin())
+
+    static final ConfigObject configurationWithSingleSignOutDisabled = parse("""
+        |security.shiro.cas.serverUrl = "https://cas.example.com/cas/"
+        |security.shiro.cas.singleSignOut.disabled = true
+        |""".stripMargin())
+
+    private static ConfigObject parse(String script) {
+        return new ConfigSlurper().parse(script)
     }
 }

@@ -9,3 +9,4 @@ target/
 plugin.xml
 /web-app
 .DS_Store
+/classes/

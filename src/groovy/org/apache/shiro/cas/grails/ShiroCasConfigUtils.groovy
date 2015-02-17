@@ -13,6 +13,9 @@ class ShiroCasConfigUtils {
     @PackageScope
     static Log log = LogFactory.getLog(ShiroCasConfigUtils)
 
+    @PackageScope
+    static LinkGenerator linkGenerator = null
+
     private static String serverUrl
     private static String configuredLoginUrl
     private static String configuredLogoutUrl
@@ -20,6 +23,7 @@ class ShiroCasConfigUtils {
     private static String servicePath
     private static String failurePath
     private static Map loginParameters
+    private static boolean singleSignOutDisabled
     private static String singleSignOutArtifactParameterName
     private static String singleSignOutLogoutParameterName
     private static String filterChainDefinitions
@@ -68,28 +72,27 @@ class ShiroCasConfigUtils {
         return assembleLogoutUrl(serviceUrl)
     }
 
-    static private void processRequiredConfiguration(ConfigObject config) {
+    private static void processRequiredConfiguration(ConfigObject config) {
         serverUrl = stripTrailingSlash(config.security.shiro.cas.serverUrl ?: "")
         configuredBaseServiceUrl = stripTrailingSlash(config.security.shiro.cas.baseServiceUrl ?: "")
     }
 
-    static private void processOptionalConfiguration(ConfigObject config) {
+    private static void processOptionalConfiguration(ConfigObject config) {
         servicePath = config.security.shiro.cas.servicePath ?: "/shiro-cas"
+        singleSignOutDisabled = config.security.shiro.cas.singleSignOut.disabled
         singleSignOutArtifactParameterName = config.security.shiro.cas.singleSignOut.artifactParameterName ?: "ticket"
         singleSignOutLogoutParameterName = config.security.shiro.cas.singleSignOut.logoutParameterName ?: "logoutRequest"
         filterChainDefinitions = config.security.shiro.filter.filterChainDefinitions ?: ""
         loginParameters = config.security.shiro.cas.loginParameters ?: null
         configuredLoginUrl = config.security.shiro.cas.loginUrl ?: null
         configuredLogoutUrl = config.security.shiro.cas.logoutUrl ?: null
-
         failurePath = config.security.shiro.cas.failurePath ?: ""
     }
 
-    static private boolean minimalConfigurationValid() {
+    private static boolean minimalConfigurationValid() {
         if (!serverUrl) {
             log.error("Invalid application configuration: security.shiro.cas.serverUrl is required; it should be https://host:port/cas")
         }
-
         return serverUrl
     }
 
@@ -98,7 +101,7 @@ class ShiroCasConfigUtils {
     }
 
     private static String getDefaultBaseServiceUrl() {
-        def linkGenerator = Holders.grailsApplication?.mainContext?.getBean('grailsLinkGenerator') as LinkGenerator
+        def linkGenerator = linkGenerator ?: Holders.grailsApplication?.mainContext?.getBean('grailsLinkGenerator') as LinkGenerator
         return stripTrailingSlash(linkGenerator?.serverBaseURL)
     }
 
@@ -130,7 +133,7 @@ class ShiroCasConfigUtils {
     }
 
     static boolean isSingleSignOutDisabled() {
-        return Holders.config.security.shiro.cas.singleSignOut.disabled ?: false
+        return singleSignOutDisabled
     }
 
     static String getShiroCasFilter() {
