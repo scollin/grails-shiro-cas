@@ -36,11 +36,7 @@ class ShiroCasGrailsPlugin {
         shiroSecurityManager.propertyValues.add("subjectFactory", casSubjectFactory)
         if (!securityConfig.filter.config) {
 
-            casFilter(DynamicServerNameCasFilter) { bean ->
-                if (ShiroCasConfigUtils.failureUrl) {
-                    failureUrl = ShiroCasConfigUtils.failureUrl
-                }
-            }
+            casFilter(DynamicServerNameCasFilter)
 
             if (!ShiroCasConfigUtils.singleSignOutDisabled) {
                 singleSignOutFilter(SingleSignOutFilter) { bean ->
