@@ -1,0 +1,4 @@
+class PublicController {
+
+    def index() { }
+}

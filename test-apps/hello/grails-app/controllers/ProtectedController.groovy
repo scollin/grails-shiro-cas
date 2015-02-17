@@ -1,0 +1,4 @@
+class ProtectedController {
+
+    def index() {}
+}
