@@ -1,7 +1,13 @@
 # Unreleased
 
 * Simplify configuration; now the only required configuration is `security.shiro.cas.serverUrl`
-* Use multi-domain support if `security.shiro.cas.baseServiceUrl` not specified
+* Multi-domain support used by default
+* Removed support for `security.shiro.cas.serviceUrl`
+  * In many cases, you can simply remove your old `security.shiro.cas.serviceUrl` configuration
+  * If this doesn't work for you, replace it with `security.shiro.cas.baseServiceUrl`, removing the `/shiro-cas` suffix
+  * If you use a custom callback path, specify it using `security.shiro.cas.servicePath`
+* Removed support for `security.shiro.cas.failureUrl`
+  * Instead, configure `security.shiro.cas.failurePath` if desired.
 
 # 0.4.0 (2015-01-27)
 
