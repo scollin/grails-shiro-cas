@@ -4,6 +4,9 @@ import grails.util.Holders
 import groovy.transform.PackageScope
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.apache.shiro.SecurityUtils
+import org.apache.shiro.web.util.WebUtils
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.web.util.UriComponentsBuilder
 
 class ShiroCasConfigUtils {
@@ -39,6 +42,14 @@ class ShiroCasConfigUtils {
 
     static String getSingleSignOutLogoutParameterName() {
         return singleSignOutLogoutParameterName
+    }
+
+    static String getValidationUrl() {
+        return configuredBaseServiceUrl ? configuredBaseServiceUrl + servicePath : currentUrl
+    }
+
+    private static String getCurrentUrl() {
+        return WebUtils.getHttpRequest(SecurityUtils.subject)?.requestURL
     }
 
     static String getServiceUrl() {
@@ -87,7 +98,8 @@ class ShiroCasConfigUtils {
     }
 
     private static String getDefaultBaseServiceUrl() {
-        return stripTrailingSlash(Holders.grailsApplication?.mainContext?.getBean('grailsLinkGenerator')?.serverBaseURL)
+        def linkGenerator = Holders.grailsApplication?.mainContext?.getBean('grailsLinkGenerator') as LinkGenerator
+        return stripTrailingSlash(linkGenerator?.serverBaseURL)
     }
 
     private static String assembleLoginUrl(String serviceUrl) {
