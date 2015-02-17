@@ -1,5 +1,8 @@
 # Unreleased
 
+* Simplify configuration; now the only required configuration is `security.shiro.cas.serverUrl`
+* Use multi-domain support if `security.shiro.cas.baseServiceUrl` not specified
+
 # 0.4.0 (2015-01-27)
 
 * Add multi-domain support
