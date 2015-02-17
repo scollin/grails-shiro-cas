@@ -2,13 +2,9 @@ package org.apache.shiro.cas.grails
 
 import grails.util.Holders
 import org.apache.commons.logging.Log
-import org.apache.shiro.SecurityUtils
-import org.apache.shiro.web.util.WebUtils
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.ApplicationContext
 import spock.lang.Specification
-
-import javax.servlet.http.HttpServletRequest
 
 class ShiroCasConfigUtilsSpec extends Specification {
     Log realLog
