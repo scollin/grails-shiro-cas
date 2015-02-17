@@ -1,5 +1,6 @@
-@package.line@import org.apache.shiro.authc.AccountException
+import org.apache.shiro.authc.AccountException
 import org.apache.shiro.authc.SimpleAuthenticationInfo
+import org.apache.shiro.authz.Permission
 import org.apache.shiro.cas.CasAuthenticationException
 import org.apache.shiro.cas.CasToken
 import org.apache.shiro.cas.grails.ShiroCasConfigUtils
@@ -11,7 +12,7 @@ import org.jasig.cas.client.validation.TicketValidator
 /**
  * Simple realm that authenticates users against an CAS server.
  */
-class @realm.name@ {
+class ShiroCasRealm {
     static authTokenClass = CasToken
 
     TicketValidator casTicketValidator
@@ -37,6 +38,11 @@ class @realm.name@ {
 
     private Object createApplicationPrincipal(AttributePrincipal casPrincipal) {
         return casPrincipal.name // TODO: if needed, add application-specific principal logic
+    }
+
+    @SuppressWarnings("GroovyUnusedDeclaration")
+    boolean isPermitted(Object principal, Permission requiredPermission) {
+        return true
     }
 
     private static String preValidate(CasToken authToken) {

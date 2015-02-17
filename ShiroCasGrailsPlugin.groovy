@@ -1,5 +1,4 @@
 import grails.spring.BeanBuilder
-import org.apache.shiro.cas.CasFilter
 import org.apache.shiro.cas.CasSubjectFactory
 import org.apache.shiro.cas.grails.DynamicServerNameCasFilter
 import org.apache.shiro.cas.grails.ShiroCasConfigUtils
@@ -8,7 +7,7 @@ import org.jasig.cas.client.session.SingleSignOutHttpSessionListener
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator
 
 class ShiroCasGrailsPlugin {
-    def version = "0.4.1-SNAPSHOT"
+    def version = "0.5.0-SNAPSHOT"
     def grailsVersion = "2.0 > *"
     def loadAfter = ["shiro"]
     def title = "Shiro CAS Plugin"
@@ -37,11 +36,7 @@ class ShiroCasGrailsPlugin {
         shiroSecurityManager.propertyValues.add("subjectFactory", casSubjectFactory)
         if (!securityConfig.filter.config) {
 
-            casFilter(DynamicServerNameCasFilter) { bean ->
-                if (ShiroCasConfigUtils.failureUrl) {
-                    failureUrl = ShiroCasConfigUtils.failureUrl
-                }
-            }
+            casFilter(DynamicServerNameCasFilter)
 
             if (!ShiroCasConfigUtils.singleSignOutDisabled) {
                 singleSignOutFilter(SingleSignOutFilter) { bean ->
@@ -53,9 +48,6 @@ class ShiroCasGrailsPlugin {
 
             def shiroFilter = beanBuilder.getBeanDefinition("shiroFilter")
             shiroFilter.propertyValues.addPropertyValue("filterChainDefinitions", ShiroCasConfigUtils.shiroCasFilter)
-            if (!securityConfig.filter.loginUrl) {
-                shiroFilter.propertyValues.addPropertyValue("loginUrl", ShiroCasConfigUtils.defaultLoginUrl)
-            }
         }
     }
 

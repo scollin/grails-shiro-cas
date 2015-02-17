@@ -44,11 +44,11 @@ class ShiroCasPrincipalManagerSpec extends Specification {
         then: "it doesn't do anything"
     }
 
-    private AuthenticationToken newNonCasToken(int num) {
+    private static AuthenticationToken newNonCasToken(int num) {
         return new UsernamePasswordToken("user" + num, "password" + num)
     }
 
-    private AuthenticationToken newCasToken(int num) {
+    private static AuthenticationToken newCasToken(int num) {
         def token = new CasToken("ticket" + num)
         token.userId = "user" + num
         return token
