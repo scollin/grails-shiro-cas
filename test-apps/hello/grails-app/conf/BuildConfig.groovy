@@ -59,7 +59,7 @@ grails.project.dependency.resolution = {
 
         // plugins for the compile step
         compile ":scaffolding:2.1.2"
-        compile ':cache:1.1.8'
+        // compile ':cache:1.1.8'
         compile ":asset-pipeline:1.9.9"
         compile ":shiro:1.2.1"
         compile ":shiro-cas:0.5.0-SNAPSHOT"
