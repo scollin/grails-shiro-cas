@@ -86,7 +86,7 @@ class ShiroCasConfigUtils {
         loginParameters = config.security.shiro.cas.loginParameters ?: null
         configuredLoginUrl = config.security.shiro.cas.loginUrl ?: null
         configuredLogoutUrl = config.security.shiro.cas.logoutUrl ?: null
-        failurePath = config.security.shiro.cas.failurePath ?: ""
+        failurePath = config.security.shiro.cas.failurePath ?: "/auth/cas-failure"
     }
 
     private static boolean minimalConfigurationValid() {

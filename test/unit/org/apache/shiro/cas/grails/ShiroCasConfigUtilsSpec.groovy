@@ -47,19 +47,19 @@ class ShiroCasConfigUtilsSpec extends Specification {
 
     void "configurations without a baseServiceUrl use dynamic URLs from the application context"(){
         setup:
-        1 * mockLinkGenerator.getServerBaseURL() >> "https://dynamic.test.server/ctx/"
-        1 * mockLinkGenerator.getServerBaseURL() >> "https://second.test.server/ctx/"
+        2 * mockLinkGenerator.getServerBaseURL() >> "https://dynamic.test.server/ctx/"
+        2 * mockLinkGenerator.getServerBaseURL() >> "https://second.test.server/ctx/"
 
         when: "initialized with a dynamicServerName configuration"
         ShiroCasConfigUtils.initialize(ConfigurationFixtures.serverUrlOnlyConfiguration)
 
         then: "URLs overridden using first domain"
         ShiroCasConfigUtils.serviceUrl == "https://dynamic.test.server/ctx/shiro-cas"
-        ShiroCasConfigUtils.failureUrl == ""
+        ShiroCasConfigUtils.failureUrl == "https://dynamic.test.server/ctx/auth/cas-failure"
 
         and: "URLs overridden using second domain"
         ShiroCasConfigUtils.serviceUrl == "https://second.test.server/ctx/shiro-cas"
-        ShiroCasConfigUtils.failureUrl == ""
+        ShiroCasConfigUtils.failureUrl == "https://second.test.server/ctx/auth/cas-failure"
     }
 
     void "custom service and failure path work with dynamic server base url"(){
@@ -93,7 +93,7 @@ class ShiroCasConfigUtilsSpec extends Specification {
         and: "other values are either defaulted or based on the configured values"
         ShiroCasConfigUtils.loginUrl == "https://cas.example.com/cas/login?service=https://static.example.com/app/shiro-cas"
         ShiroCasConfigUtils.logoutUrl == "https://cas.example.com/cas/logout?service=https://static.example.com/app/shiro-cas"
-        ShiroCasConfigUtils.failureUrl == ""
+        ShiroCasConfigUtils.failureUrl == "https://static.example.com/app/auth/cas-failure"
         ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=singleSignOutFilter,casFilter\n"
         !ShiroCasConfigUtils.singleSignOutDisabled
         ShiroCasConfigUtils.singleSignOutArtifactParameterName == "ticket"
@@ -147,7 +147,7 @@ class ShiroCasConfigUtilsSpec extends Specification {
         and: "other values are either defaulted or based on the configured values"
         ShiroCasConfigUtils.loginUrl == "https://cas.example.com/cas/login?service=https://app.example.com/shiro-cas&renew=true&gateway=true&welcome=Welcome%20to%20Shiro%20Cas"
         ShiroCasConfigUtils.logoutUrl == "https://cas.example.com/cas/logout?service=https://app.example.com/shiro-cas"
-        ShiroCasConfigUtils.failureUrl == ""
+        ShiroCasConfigUtils.failureUrl == "https://app.example.com/auth/cas-failure"
         ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=singleSignOutFilter,casFilter\n"
     }
 

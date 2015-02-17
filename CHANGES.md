@@ -7,7 +7,8 @@
   * If this doesn't work for you, replace it with `security.shiro.cas.baseServiceUrl`, removing the `/shiro-cas` suffix
   * If you use a custom callback path, specify it using `security.shiro.cas.servicePath`
 * Removed support for `security.shiro.cas.failureUrl`
-  * Instead, configure `security.shiro.cas.failurePath` if desired.
+  * Instead, configure `security.shiro.cas.failurePath` if desired
+* New default value for `security.shiro.cas.failurePath`
 
 # 0.4.0 (2015-01-27)
 
