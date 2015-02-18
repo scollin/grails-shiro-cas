@@ -19,6 +19,7 @@ class ShiroCasGrailsPlugin {
         [name: "Ford Guo", email: "agile.guo@gmail.com"],
         [name: "Gavin Hogan", email: "gavin@commercehub.com"],
         [name: "Curt Hostetter", email: "hostetcl@gmail.com"],
+        [name: "Jonathan Chapman", email: "jonathan@enablelabs.com"],
     ]
     def organization = [ name: "CommerceHub", url: "http://www.commercehub.com/" ]
     def issueManagement = [ system: "GitHub", url: "https://github.com/commercehub-oss/grails-shiro-cas/issues" ]
