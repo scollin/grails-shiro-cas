@@ -1,5 +1,7 @@
 # Unreleased
 
+# 0.5.0 (2015-02-25)
+
 * Simplify configuration; now the only required configuration is `security.shiro.cas.serverUrl`
 * Multi-domain support used by default
 * Removed support for `security.shiro.cas.serviceUrl`
@@ -16,7 +18,7 @@
 
 # 0.3.3 (2014-08-29)
 
-* Set `casTicketValidator` to use `UTF-8` as the encoding by default 
+* Set `casTicketValidator` to use `UTF-8` as the encoding by default
 
 # 0.3.2
 
@@ -30,7 +32,7 @@
 
 * Update shiro plugin dependency to 1.2.1
 * Add support for Single Sign Out [#5](https://github.com/commercehub-oss/grails-shiro-cas/issues/5)
-* Add ShiroCasUrlBuilder to support building login URLs with additional parameters [#4](https://github.com/commercehub-oss/grails-shiro-cas/issues/4) 
+* Add ShiroCasUrlBuilder to support building login URLs with additional parameters [#4](https://github.com/commercehub-oss/grails-shiro-cas/issues/4)
 
 # 0.2.0
 
