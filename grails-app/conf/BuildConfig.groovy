@@ -8,9 +8,11 @@ grails.project.dependency.resolution = {
     log 'warn'
 
     repositories {
+        inherit false
         grailsCentral()
         // mavenLocal() // generally not a good idea, as it can result in non-reproducible builds
         mavenCentral()
+        mavenRepo "https://repo.grails.org/grails/plugins-releases"
     }
 
     dependencies {
@@ -22,12 +24,10 @@ grails.project.dependency.resolution = {
 
     plugins {
         compile ":shiro:1.2.1"
-
         test(":spock:0.7") {
             exclude "spock-grails-support"
             export = false
         }
-        
         build ':release:2.2.1', ':rest-client-builder:1.0.3', {
             export = false
         }
