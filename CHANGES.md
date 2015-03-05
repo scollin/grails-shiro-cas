@@ -1,5 +1,7 @@
 # Unreleased
 
+* Use configured `servicePath` instead of hardcoded default in filter configuration
+
 # 0.5.0 (2015-02-25)
 
 * Simplify configuration; now the only required configuration is `security.shiro.cas.serverUrl`
