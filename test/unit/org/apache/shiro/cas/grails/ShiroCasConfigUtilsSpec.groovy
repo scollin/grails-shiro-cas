@@ -113,7 +113,7 @@ class ShiroCasConfigUtilsSpec extends Specification {
         ShiroCasConfigUtils.loginUrl == "https://cas.example.com/cas/custom-login?renew=true"
         ShiroCasConfigUtils.logoutUrl == "https://cas.example.com/cas/custom-logout"
         ShiroCasConfigUtils.failureUrl == "https://localhost:8080/app/cas-failure"
-        ShiroCasConfigUtils.shiroCasFilter == "/shiro-cas=singleSignOutFilter,casFilter\n/other=otherFilter"
+        ShiroCasConfigUtils.shiroCasFilter == "/cas-callback=singleSignOutFilter,casFilter\n/other=otherFilter"
         !ShiroCasConfigUtils.singleSignOutDisabled
         ShiroCasConfigUtils.singleSignOutArtifactParameterName == "token"
         ShiroCasConfigUtils.singleSignOutLogoutParameterName == "slo"
