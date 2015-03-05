@@ -1,5 +1,7 @@
 # Unreleased
 
+# 0.5.1 (2015-03-05)
+
 * Use configured `servicePath` instead of hardcoded default in filter configuration
 
 # 0.5.0 (2015-02-25)
