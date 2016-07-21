@@ -1,3 +1,7 @@
+# THIS PROJECT IS DEPRECATED
+grails-shiro-cas is no longer maintained, and **this** repository will be removed from GitHub on or after Saturday, January 21, 2017. Published release artifacts will **continue** to be available indefinitely via
+[the Grails plugin portal](https://grails.org/plugins/).
+
 # Shiro CAS Grails Plugin
 
 [Shiro](http://shiro.apache.org/) is a flexible authentication and authorization framework for Java that has a corresponding [Grails plugin](http://grails.org/plugin/shiro) for simplifying access control in Grails applications. This plugin extends the base Shiro plugin with support for authentication using the [Shiro CAS integration](https://shiro.apache.org/cas.html).
