@@ -6,8 +6,6 @@ grails-shiro-cas is no longer maintained, and **this** repository will be remove
 
 [Shiro](http://shiro.apache.org/) is a flexible authentication and authorization framework for Java that has a corresponding [Grails plugin](http://grails.org/plugin/shiro) for simplifying access control in Grails applications. This plugin extends the base Shiro plugin with support for authentication using the [Shiro CAS integration](https://shiro.apache.org/cas.html).
 
-[![Build Status](https://travis-ci.org/commercehub-oss/grails-shiro-cas.png?branch=master)](https://travis-ci.org/commercehub-oss/grails-shiro-cas)
-
 # Usage
 
 This assumes that you've already configured the [Shiro plugin](http://grails.org/plugin/shiro).

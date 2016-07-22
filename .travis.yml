@@ -1,7 +1,0 @@
-language: groovy
-jdk:
-  - openjdk6
-  - openjdk7
-  - oraclejdk7
-script: ./grailsw -plain-output -non-interactive refresh-dependencies
-  && ./grailsw -plain-output -non-interactive test-app -unit
